@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOLO-FIT | Dashboard Pro</title>
+    <title>HOLO-FIT | Dashboard Offline</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .holo-card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(56, 189, 248, 0.3); backdrop-filter: blur(10px); }
@@ -14,219 +13,164 @@
         .btn-primary { background: linear-gradient(90deg, #38bdf8, #818cf8); transition: all 0.3s ease; }
         .btn-primary:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
         .hidden { display: none !important; }
-        input::placeholder { color: #64748b; }
     </style>
 </head>
 <body class="p-4 md:p-8 max-w-2xl mx-auto">
 
-    <div id="auth-section" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-4">
-        <div class="holo-card p-8 rounded-[2.5rem] w-full max-w-sm text-center border-sky-500/50">
-            <div class="mb-6">
-                <h1 class="text-4xl font-black text-sky-400 tracking-tighter">HOLO-FIT</h1>
-                <div class="h-1 w-12 bg-sky-500 mx-auto mt-1 rounded-full"></div>
+    <header class="flex justify-between items-start mb-10">
+        <div>
+            <h1 class="text-2xl font-black tracking-tighter text-sky-400">HOLO-FIT</h1>
+            <p id="display-nombre" class="text-slate-400 text-sm font-medium italic">Bienvenido, Guerrero</p>
+            <button onclick="abrirModal()" class="text-[10px] text-sky-500 underline uppercase font-bold tracking-widest mt-1">Editar Perfil</button>
+        </div>
+        <div class="text-right">
+            <div class="flex items-center justify-end text-orange-400 font-black italic text-xl">
+                <i data-lucide="flame" class="mr-1 w-5 h-5"></i> <span id="racha-val">0</span>
             </div>
-            <p class="text-slate-400 mb-8 text-sm">Vincula tu cuenta para sincronizar tu progreso y despertar al tigre.</p>
-            <input type="email" id="auth-email" placeholder="tu@email.com" 
-                class="w-full bg-slate-800/50 border border-slate-700 rounded-2xl p-4 mb-4 text-white outline-none focus:border-sky-500 transition-all">
-            <button id="btn-login" onclick="login()" class="btn-primary w-full py-4 rounded-2xl font-bold uppercase tracking-widest text-sm">
-                Enviar Magic Link
-            </button>
+            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Racha de Días</p>
+        </div>
+    </header>
+
+    <div class="flex flex-col items-center mb-12">
+        <div class="relative w-56 h-56 mb-6 flex items-center justify-center">
+            <div class="absolute inset-0 bg-sky-500/20 rounded-full animate-ping opacity-20"></div>
+            <div class="absolute inset-0 bg-sky-500/10 rounded-full animate-pulse"></div>
+            <span id="tiger-emoji" class="text-9xl tiger-glow animate-bounce inline-block">🐯</span>
+        </div>
+        <div class="text-center">
+            <h2 id="tiger-status" class="text-2xl font-bold tracking-tight mb-1 italic uppercase text-white">Tigre en Espera</h2>
+            <p id="frase-motivadora" class="text-slate-400 text-sm max-w-[250px] mx-auto leading-relaxed">
+                Tu compañero digital espera tu primer movimiento.
+            </p>
         </div>
     </div>
 
-    <div id="main-dashboard" class="hidden">
-        <header class="flex justify-between items-start mb-10">
+    <div class="holo-card rounded-[2rem] p-7 mb-6 border-sky-400/20 shadow-2xl shadow-sky-900/20">
+        <div class="flex justify-between items-center mb-6">
             <div>
-                <h1 class="text-2xl font-black tracking-tighter text-sky-400">HOLO-FIT</h1>
-                <p id="display-nombre" class="text-slate-400 text-sm font-medium italic">Cargando guerrero...</p>
-                <div class="flex gap-3 mt-2">
-                    <button onclick="abrirModal()" class="text-[10px] text-sky-500 underline uppercase font-bold tracking-widest">Editar Perfil</button>
-                    <button onclick="logout()" class="text-[10px] text-red-400 underline uppercase font-bold tracking-widest">Salir</button>
-                </div>
+                <span class="bg-sky-500/20 text-sky-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Objetivo Diario</span>
+                <h3 class="text-2xl font-black mt-2 tracking-tight">Full Body Alpha</h3>
+                <p class="text-slate-400 text-sm">25 min • Sin equipo</p>
             </div>
-            <div class="text-right">
-                <div class="flex items-center justify-end text-orange-400 font-black italic text-xl">
-                    <i data-lucide="flame" class="mr-1 w-5 h-5"></i> <span id="racha-val">0</span>
-                </div>
-                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Racha de Días</p>
-            </div>
-        </header>
-
-        <div class="flex flex-col items-center mb-12">
-            <div class="relative w-56 h-56 mb-6 flex items-center justify-center">
-                <div class="absolute inset-0 bg-sky-500/20 rounded-full animate-ping opacity-20"></div>
-                <div class="absolute inset-0 bg-sky-500/10 rounded-full animate-pulse"></div>
-                <span id="tiger-emoji" class="text-9xl tiger-glow animate-bounce inline-block">🐯</span>
-            </div>
-            <div class="text-center">
-                <h2 id="tiger-status" class="text-2xl font-bold tracking-tight mb-1 italic uppercase">Tigre en Espera</h2>
-                <p id="frase-motivadora" class="text-slate-400 text-sm max-w-[250px] mx-auto leading-relaxed">
-                    Tu compañero digital espera tu primer movimiento.
-                </p>
+            <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+                <i data-lucide="zap" class="text-sky-400 fill-current w-6 h-6"></i>
             </div>
         </div>
+        <button onclick="registrarEntrenamiento()" class="btn-primary w-full py-5 rounded-2xl font-black text-lg shadow-lg shadow-sky-500/20 uppercase tracking-tighter">
+            Finalizar Sesión +200 XP
+        </button>
+    </div>
 
-        <div class="holo-card rounded-[2rem] p-7 mb-6 border-sky-400/20 shadow-2xl shadow-sky-900/20">
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <span class="bg-sky-500/20 text-sky-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Objetivo Diario</span>
-                    <h3 class="text-2xl font-black mt-2 tracking-tight">Full Body Alpha</h3>
-                    <p class="text-slate-400 text-sm">25 min • Intensidad Media</p>
-                </div>
-                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                    <i data-lucide="play" class="text-sky-400 fill-current w-6 h-6"></i>
-                </div>
-            </div>
-            <button onclick="registrarEntrenamiento()" class="btn-primary w-full py-5 rounded-2xl font-black text-lg shadow-lg shadow-sky-500/20 uppercase tracking-tighter">
-                Finalizar Sesión +200 XP
-            </button>
+    <div class="grid grid-cols-2 gap-4">
+        <div class="holo-card rounded-3xl p-5 flex flex-col items-center border-yellow-500/20">
+            <i data-lucide="flame" class="text-yellow-400 mb-2 w-6 h-6"></i>
+            <p class="text-3xl font-black italic" id="calorias-val">0</p>
+            <p class="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Kcal Totales</p>
         </div>
-
-        <div class="grid grid-cols-2 gap-4">
-            <div class="holo-card rounded-3xl p-5 flex flex-col items-center">
-                <i data-lucide="zap" class="text-yellow-400 mb-2 w-6 h-6"></i>
-                <p class="text-3xl font-black italic" id="calorias-val">0</p>
-                <p class="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Kcal Totales</p>
-            </div>
-            <div class="holo-card rounded-3xl p-5 flex flex-col items-center">
-                <i data-lucide="award" class="text-purple-400 mb-2 w-6 h-6"></i>
-                <p class="text-3xl font-black italic" id="objetivo-val">---</p>
-                <p class="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Meta</p>
-            </div>
+        <div class="holo-card rounded-3xl p-5 flex flex-col items-center border-purple-500/20">
+            <i data-lucide="target" class="text-purple-400 mb-2 w-6 h-6"></i>
+            <p class="text-xl font-black italic text-center leading-none" id="objetivo-val">SIN META</p>
+            <p class="text-slate-500 text-[10px] uppercase font-bold tracking-widest mt-1">Objetivo</p>
         </div>
     </div>
+
+    <button onclick="reiniciarTodo()" class="w-full mt-10 text-[9px] text-slate-600 uppercase tracking-[0.2em] hover:text-red-500 transition-colors">
+        Reiniciar Memoria del Sistema
+    </button>
 
     <div id="modal-editar" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 z-[120]">
-        <div class="holo-card p-8 rounded-[2.5rem] w-full max-w-sm border-2 border-sky-500/30">
-            <h2 class="text-2xl font-black mb-6 text-sky-400 italic">REPROGRAMAR PERFIL</h2>
+        <div class="holo-card p-8 rounded-[2.5rem] w-full max-w-sm border-2 border-sky-500/30 shadow-2xl">
+            <h2 class="text-2xl font-black mb-6 text-sky-400 italic uppercase">Reprogramar Perfil</h2>
             
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Nombre Clave</label>
-            <input type="text" id="input-nombre" placeholder="Ej. Alex" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 mb-5 text-white outline-none focus:border-sky-500">
+            <input type="text" id="input-nombre" placeholder="Ej. Alex" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 mb-5 text-white outline-none focus:border-sky-500 transition-all">
             
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Objetivo de Misión</label>
             <select id="input-objetivo" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 mb-8 text-white outline-none focus:border-sky-500">
-                <option value="Perder Grasa">Fusión de Grasa</option>
-                <option value="Ganar Músculo">Hipertrofia Alpha</option>
-                <option value="Resistencia">Resistencia Core</option>
+                <option value="Perder Grasa">Quemar Grasa</option>
+                <option value="Ganar Músculo">Músculo Alpha</option>
+                <option value="Resistencia">Resistencia</option>
             </select>
 
             <div class="flex gap-3">
                 <button onclick="cerrarModal()" class="flex-1 py-4 rounded-xl bg-slate-800 font-bold text-xs uppercase tracking-widest border border-slate-700">Cerrar</button>
-                <button onclick="guardarCambios()" class="flex-1 py-4 rounded-xl btn-primary font-bold text-xs uppercase tracking-widest">Actualizar</button>
+                <button onclick="guardarCambios()" class="flex-1 py-4 rounded-xl btn-primary font-bold text-xs uppercase tracking-widest text-slate-900">Guardar</button>
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN SUPABASE
-        const SUPABASE_URL = 'https://wnihqwdclivnsyaqqyim.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduaWhxd2RjbGl2bnN5YXFxeWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1OTM1NjksImV4cCI6MjA5MjE2OTU2OX0.7e8IUXV88fYJ23WSsZyKicHBPcGjvsLOl1eDALHpJrw';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // --- LÓGICA DE PERSISTENCIA LOCAL (NO SUPABASE) ---
 
-        // AUTENTICACIÓN
-        async function login() {
-            const btn = document.getElementById('btn-login');
-            const email = document.getElementById('auth-email').value;
-            if(!email) return alert("Ingresa un email válido");
+        // Cargar datos al abrir la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const datosGuardados = JSON.parse(localStorage.getItem('holofit_user')) || {
+                nombre: '',
+                racha: 0,
+                calorias: 0,
+                objetivo: 'SIN META'
+            };
+            actualizarUI(datosGuardados);
+            lucide.createIcons();
+        });
 
-            btn.innerText = "ENVIANDO...";
-            btn.disabled = true;
-
-            const { error } = await supabase.auth.signInWithOtp({ 
-                email,
-                options: { emailRedirectTo: window.location.href }
-            });
-
-            if (error) {
-                alert("Error: " + error.message);
-                btn.innerText = "ENVIAR MAGIC LINK";
-                btn.disabled = false;
-            } else {
-                alert("¡Link enviado! Revisa tu bandeja de entrada.");
-                btn.innerText = "REVISA TU CORREO";
-            }
-        }
-
-        async function logout() {
-            await supabase.auth.signOut();
-            location.reload();
-        }
-
-        async function checkSession() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                document.getElementById('auth-section').classList.add('hidden');
-                document.getElementById('main-dashboard').classList.remove('hidden');
-                loadUserData(session.user);
-            }
-        }
-
-        // DATOS DE USUARIO
-        async function loadUserData(user) {
-            let { data: perfil, error } = await supabase.from('perfiles').select('*').eq('id', user.id).single();
+        function actualizarUI(datos) {
+            document.getElementById('display-nombre').innerText = `Bienvenido, ${datos.nombre || 'Guerrero'}`;
+            document.getElementById('racha-val').innerText = datos.racha;
+            document.getElementById('calorias-val').innerText = datos.calorias;
+            document.getElementById('objetivo-val').innerText = datos.objetivo.toUpperCase();
+            document.getElementById('tiger-status').innerText = `TIGRE DE ${datos.nombre || 'ALPHA'}`;
             
-            if (perfil) {
-                document.getElementById('display-nombre').innerText = `Bienvenido, Guerrero ${perfil.nombre_usuario || ''}`;
-                document.getElementById('racha-val').innerText = perfil.racha_dias || 0;
-                document.getElementById('calorias-val').innerText = perfil.calorias_totales || 0;
-                document.getElementById('objetivo-val').innerText = perfil.objetivo ? perfil.objetivo.split(' ')[0] : '---';
-                document.getElementById('tiger-status').innerText = `TIGRE DE ${perfil.nombre_usuario || 'ALPHA'}`;
-                
-                if(perfil.racha_dias > 0) {
-                    document.getElementById('tiger-emoji').innerText = "🐅";
-                    document.getElementById('frase-motivadora').innerText = "Tu tigre está despierto y listo para la acción.";
-                }
+            // Evolución visual del tigre
+            const emoji = document.getElementById('tiger-emoji');
+            const frase = document.getElementById('frase-motivadora');
+            
+            if (datos.racha >= 1) {
+                emoji.innerText = "🐅";
+                frase.innerText = "Tu racha ha despertado al tigre. ¡Sigue así!";
+            }
+            if (datos.racha >= 5) {
+                emoji.innerText = "🐆";
+                emoji.style.filter = "drop-shadow(0 0 25px #fbbf24)";
+                frase.innerText = "¡MODO ALPHA! Tu tigre es una bestia imparable.";
             }
         }
 
-        async function guardarCambios() {
+        function registrarEntrenamiento() {
+            let datos = JSON.parse(localStorage.getItem('holofit_user')) || { nombre: '', racha: 0, calorias: 0, objetivo: 'SIN META' };
+            
+            datos.racha += 1;
+            datos.calorias += 200;
+            
+            localStorage.setItem('holofit_user', JSON.stringify(datos));
+            actualizarUI(datos);
+            alert("¡ENTRENAMIENTO COMPLETADO! +200 XP 🐯🔥");
+        }
+
+        function guardarCambios() {
             const nombre = document.getElementById('input-nombre').value;
             const objetivo = document.getElementById('input-objetivo').value;
-            const { data: { user } } = await supabase.auth.getUser();
 
-            if (user && nombre) {
-                const { error } = await supabase.from('perfiles').upsert({ 
-                    id: user.id, 
-                    nombre_usuario: nombre, 
-                    objetivo: objetivo 
-                });
+            if (!nombre) return alert("Ingresa un nombre clave");
 
-                if (!error) {
-                    cerrarModal();
-                    location.reload();
-                } else {
-                    alert("Error al actualizar: " + error.message);
-                }
-            } else {
-                alert("Por favor ingresa un nombre.");
-            }
+            let datos = JSON.parse(localStorage.getItem('holofit_user')) || { racha: 0, calorias: 0 };
+            datos.nombre = nombre;
+            datos.objetivo = objetivo;
+
+            localStorage.setItem('holofit_user', JSON.stringify(datos));
+            actualizarUI(datos);
+            cerrarModal();
         }
 
-        async function registrarEntrenamiento() {
-            const { data: { user } } = await supabase.auth.getUser();
-            let { data: perfil } = await supabase.from('perfiles').select('*').eq('id', user.id).single();
-
-            const nuevaRacha = (perfil.racha_dias || 0) + 1;
-            const nuevasCals = (perfil.calorias_totales || 0) + 200;
-
-            const { error } = await supabase.from('perfiles').upsert({
-                id: user.id,
-                racha_dias: nuevaRacha,
-                calorias_totales: nuevasCals
-            });
-
-            if(!error) {
-                alert("¡Entrenamiento registrado! +200 Calorías 🔥");
+        function reiniciarTodo() {
+            if(confirm("¿Estás seguro de que quieres borrar tu progreso? Tu tigre volverá a dormir.")) {
+                localStorage.removeItem('holofit_user');
                 location.reload();
             }
         }
 
         function abrirModal() { document.getElementById('modal-editar').classList.remove('hidden'); }
         function cerrarModal() { document.getElementById('modal-editar').classList.add('hidden'); }
-
-        // Inicialización
-        lucide.createIcons();
-        checkSession();
     </script>
 </body>
 </html>
