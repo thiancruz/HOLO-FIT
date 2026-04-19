@@ -94,5 +94,27 @@
 </body>
 </html>
 </script>
+<div id="modal-editar" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="holo-card p-6 rounded-3xl w-full max-w-sm border-2 border-sky-500">
+        <h2 class="text-xl font-bold mb-4 text-sky-400">Editar Perfil</h2>
+        
+        <label class="block text-xs text-slate-400 uppercase mb-1">Nombre de Usuario</label>
+        <input type="text" id="input-nombre" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 mb-4 text-white focus:border-sky-500 outline-none">
+        
+        <label class="block text-xs text-slate-400 uppercase mb-1">Tu Objetivo</label>
+        <select id="input-objetivo" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 mb-6 text-white outline-none">
+            <option value="Perder Grasa">Perder Grasa</option>
+            <option value="Ganar Músculo">Ganar Músculo</option>
+            <option value="Resistencia">Resistencia</option>
+        </select>
+
+        <div class="flex gap-3">
+            <button onclick="cerrarModal()" class="flex-1 py-3 rounded-xl bg-slate-700 font-bold">Cancelar</button>
+            <button onclick="guardarCambios()" class="flex-1 py-3 rounded-xl btn-primary font-bold">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<button onclick="abrirModal()" class="text-xs text-sky-500 underline">Editar perfil</button>
 </body>
 </html>
