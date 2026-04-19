@@ -84,6 +84,43 @@
     </div>
 
     <script>
+        // Funciones de Interfaz
+function abrirModal() {
+    document.getElementById('modal-editar').classList.remove('hidden');
+}
+
+function cerrarModal() {
+    document.getElementById('modal-editar').classList.add('hidden');
+}
+
+// GUARDAR DATOS EN SUPABASE
+async function guardarCambios() {
+    const nuevoNombre = document.getElementById('input-nombre').value;
+    const nuevoObjetivo = document.getElementById('input-objetivo').value;
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+        const { error } = await supabase
+            .from('perfiles')
+            .update({ 
+                nombre_usuario: nuevoNombre, 
+                objetivo: nuevoObjetivo 
+            })
+            .eq('id', user.id);
+
+        if (!error) {
+            // Actualizar la pantalla inmediatamente
+            document.querySelector('p.text-slate-400.text-sm').innerText = `Bienvenido, ${nuevoNombre}`;
+            alert("Perfil actualizado en la nube 🐯✨");
+            cerrarModal();
+        } else {
+            alert("Error al guardar: " + error.message);
+        }
+    } else {
+        alert("Debes iniciar sesión para guardar cambios");
+    }
+}
         // Inicializar iconos
         lucide.createIcons();
 
