@@ -3,162 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOLO-FIT | Dashboard</title>
+    <title>HOLO-FIT | Dashboard Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
+        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .holo-card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(56, 189, 248, 0.3); backdrop-filter: blur(10px); }
         .tiger-glow { filter: drop-shadow(0 0 15px #38bdf8); }
         .btn-primary { background: linear-gradient(90deg, #38bdf8, #818cf8); transition: all 0.3s ease; }
-        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(56, 189, 248, 0.5); }
-        .hidden { display: none; }
+        .btn-primary:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
+        .hidden { display: none !important; }
+        input::placeholder { color: #64748b; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-8 max-w-2xl mx-auto">
 
     <div id="auth-section" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-4">
-        <div class="holo-card p-8 rounded-3xl w-full max-w-sm text-center">
-            <h1 class="text-3xl font-bold text-sky-400 mb-2">HOLO-FIT</h1>
-            <p class="text-slate-400 mb-6">Ingresa tu email para despertar a tu tigre</p>
-            <input type="email" id="auth-email" placeholder="tu@email.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4 text-white outline-none focus:border-sky-500">
-            <button onclick="login()" class="btn-primary w-full py-4 rounded-2xl font-bold">ENVIAR LINK DE ACCESO</button>
-        </div>
-    </div>
-
-    <header class="flex justify-between items-center mb-8">
-        <div>
-            <h1 class="text-2xl font-bold tracking-tighter text-sky-400">HOLO-FIT</h1>
-            <p id="display-nombre" class="text-slate-400 text-sm">Cargando guerrero...</p>
-            <button onclick="abrirModal()" class="text-[10px] text-sky-500 underline uppercase tracking-widest">Editar perfil</button>
-        </div>
-        <div class="text-right">
-            <div class="flex items-center text-orange-400 font-bold italic">
-                <i data-lucide="flame" class="mr-1"></i> <span id="racha-val">0</span> DÍAS
+        <div class="holo-card p-8 rounded-[2.5rem] w-full max-w-sm text-center border-sky-500/50">
+            <div class="mb-6">
+                <h1 class="text-4xl font-black text-sky-400 tracking-tighter">HOLO-FIT</h1>
+                <div class="h-1 w-12 bg-sky-500 mx-auto mt-1 rounded-full"></div>
             </div>
-            <p class="text-xs text-slate-500 uppercase tracking-widest">Racha Actual</p>
-        </div>
-    </header>
-
-    <div class="flex flex-col items-center mb-10">
-        <div class="relative w-48 h-48 mb-4 flex items-center justify-center">
-            <div class="absolute inset-0 bg-sky-500/10 rounded-full animate-pulse"></div>
-            <span class="text-8xl tiger-glow animate-bounce">🐯</span>
-        </div>
-        <div class="text-center">
-            <h2 id="tiger-status" class="text-xl font-semibold">Tigre en Modo "Esperando"</h2>
-            <p class="text-slate-400 text-sm px-6">Tu tigre necesita tus datos para evolucionar.</p>
+            <p class="text-slate-400 mb-8 text-sm">Vincula tu cuenta para sincronizar tu progreso y despertar al tigre.</p>
+            <input type="email" id="auth-email" placeholder="tu@email.com" 
+                class="w-full bg-slate-800/50 border border-slate-700 rounded-2xl p-4 mb-4 text-white outline-none focus:border-sky-500 transition-all">
+            <button id="btn-login" onclick="login()" class="btn-primary w-full py-4 rounded-2xl font-bold uppercase tracking-widest text-sm">
+                Enviar Magic Link
+            </button>
         </div>
     </div>
 
-    <div class="holo-card rounded-3xl p-6 mb-6">
-        <div class="flex justify-between items-start mb-4">
+    <div id="main-dashboard" class="hidden">
+        <header class="flex justify-between items-start mb-10">
             <div>
-                <span class="bg-sky-500/20 text-sky-400 text-[10px] font-bold px-2 py-1 rounded uppercase">Hoy</span>
-                <h3 class="text-xl font-bold mt-2">Quema de Grasa v1.0</h3>
-                <p class="text-slate-400 text-sm">25 min • Sin equipo</p>
+                <h1 class="text-2xl font-black tracking-tighter text-sky-400">HOLO-FIT</h1>
+                <p id="display-nombre" class="text-slate-400 text-sm font-medium italic">Cargando guerrero...</p>
+                <div class="flex gap-3 mt-2">
+                    <button onclick="abrirModal()" class="text-[10px] text-sky-500 underline uppercase font-bold tracking-widest">Editar Perfil</button>
+                    <button onclick="logout()" class="text-[10px] text-red-400 underline uppercase font-bold tracking-widest">Salir</button>
+                </div>
             </div>
-            <div class="bg-slate-800 p-2 rounded-xl">
-                <i data-lucide="play" class="text-sky-400 fill-current"></i>
+            <div class="text-right">
+                <div class="flex items-center justify-end text-orange-400 font-black italic text-xl">
+                    <i data-lucide="flame" class="mr-1 w-5 h-5"></i> <span id="racha-val">0</span>
+                </div>
+                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Racha de Días</p>
+            </div>
+        </header>
+
+        <div class="flex flex-col items-center mb-12">
+            <div class="relative w-56 h-56 mb-6 flex items-center justify-center">
+                <div class="absolute inset-0 bg-sky-500/20 rounded-full animate-ping opacity-20"></div>
+                <div class="absolute inset-0 bg-sky-500/10 rounded-full animate-pulse"></div>
+                <span id="tiger-emoji" class="text-9xl tiger-glow animate-bounce inline-block">🐯</span>
+            </div>
+            <div class="text-center">
+                <h2 id="tiger-status" class="text-2xl font-bold tracking-tight mb-1 italic uppercase">Tigre en Espera</h2>
+                <p id="frase-motivadora" class="text-slate-400 text-sm max-w-[250px] mx-auto leading-relaxed">
+                    Tu compañero digital espera tu primer movimiento.
+                </p>
             </div>
         </div>
-        <button onclick="startWorkout()" class="btn-primary w-full py-4 rounded-2xl font-bold text-lg">EMPEZAR AHORA</button>
+
+        <div class="holo-card rounded-[2rem] p-7 mb-6 border-sky-400/20 shadow-2xl shadow-sky-900/20">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <span class="bg-sky-500/20 text-sky-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Objetivo Diario</span>
+                    <h3 class="text-2xl font-black mt-2 tracking-tight">Full Body Alpha</h3>
+                    <p class="text-slate-400 text-sm">25 min • Intensidad Media</p>
+                </div>
+                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+                    <i data-lucide="play" class="text-sky-400 fill-current w-6 h-6"></i>
+                </div>
+            </div>
+            <button onclick="registrarEntrenamiento()" class="btn-primary w-full py-5 rounded-2xl font-black text-lg shadow-lg shadow-sky-500/20 uppercase tracking-tighter">
+                Finalizar Sesión +200 XP
+            </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="holo-card rounded-3xl p-5 flex flex-col items-center">
+                <i data-lucide="zap" class="text-yellow-400 mb-2 w-6 h-6"></i>
+                <p class="text-3xl font-black italic" id="calorias-val">0</p>
+                <p class="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Kcal Totales</p>
+            </div>
+            <div class="holo-card rounded-3xl p-5 flex flex-col items-center">
+                <i data-lucide="award" class="text-purple-400 mb-2 w-6 h-6"></i>
+                <p class="text-3xl font-black italic" id="objetivo-val">---</p>
+                <p class="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Meta</p>
+            </div>
+        </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-4">
-        <div class="holo-card rounded-2xl p-4">
-            <i data-lucide="zap" class="text-yellow-400 mb-2"></i>
-            <p class="text-2xl font-bold" id="calorias-val">0</p>
-            <p class="text-slate-500 text-xs uppercase">Calorías</p>
-        </div>
-        <div class="holo-card rounded-2xl p-4">
-            <i data-lucide="trophy" class="text-orange-400 mb-2"></i>
-            <p class="text-2xl font-bold">0</p>
-            <p class="text-slate-500 text-xs uppercase">Medallas</p>
-        </div>
-    </div>
-
-    <div id="modal-editar" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[110]">
-        <div class="holo-card p-6 rounded-3xl w-full max-w-sm border-2 border-sky-500">
-            <h2 class="text-xl font-bold mb-4 text-sky-400">Editar Perfil</h2>
-            <label class="block text-xs text-slate-400 uppercase mb-1">Nombre de Usuario</label>
-            <input type="text" id="input-nombre" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 mb-4 text-white outline-none">
-            <label class="block text-xs text-slate-400 uppercase mb-1">Tu Objetivo</label>
-            <select id="input-objetivo" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 mb-6 text-white outline-none">
-                <option value="Perder Grasa">Perder Grasa</option>
-                <option value="Ganar Músculo">Ganar Músculo</option>
-                <option value="Resistencia">Resistencia</option>
+    <div id="modal-editar" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 z-[120]">
+        <div class="holo-card p-8 rounded-[2.5rem] w-full max-w-sm border-2 border-sky-500/30">
+            <h2 class="text-2xl font-black mb-6 text-sky-400 italic">REPROGRAMAR PERFIL</h2>
+            
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Nombre Clave</label>
+            <input type="text" id="input-nombre" placeholder="Ej. Alex" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 mb-5 text-white outline-none focus:border-sky-500">
+            
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Objetivo de Misión</label>
+            <select id="input-objetivo" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 mb-8 text-white outline-none focus:border-sky-500">
+                <option value="Perder Grasa">Fusión de Grasa</option>
+                <option value="Ganar Músculo">Hipertrofia Alpha</option>
+                <option value="Resistencia">Resistencia Core</option>
             </select>
+
             <div class="flex gap-3">
-                <button onclick="cerrarModal()" class="flex-1 py-3 rounded-xl bg-slate-700 font-bold">Cancelar</button>
-                <button onclick="guardarCambios()" class="flex-1 py-3 rounded-xl btn-primary font-bold">Guardar</button>
+                <button onclick="cerrarModal()" class="flex-1 py-4 rounded-xl bg-slate-800 font-bold text-xs uppercase tracking-widest border border-slate-700">Cerrar</button>
+                <button onclick="guardarCambios()" class="flex-1 py-4 rounded-xl btn-primary font-bold text-xs uppercase tracking-widest">Actualizar</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. CONFIGURACIÓN SUPABASE (RELLENA CON TUS DATOS)
-        const SUPABASE_URL = 'https://TU_PROYECTO.supabase.co';
-        const SUPABASE_KEY = 'TU_ANON_KEY';
-        const supabase = window.supabase.createClient(https://wnihqwdclivnsyaqqyim.supabase.co, eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduaWhxd2RjbGl2bnN5YXFxeWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1OTM1NjksImV4cCI6MjA5MjE2OTU2OX0.7e8IUXV88fYJ23WSsZyKicHBPcGjvsLOl1eDALHpJrw);
+        // CONFIGURACIÓN SUPABASE
+        const SUPABASE_URL = 'https://wnihqwdclivnsyaqqyim.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduaWhxd2RjbGl2bnN5YXFxeWltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1OTM1NjksImV4cCI6MjA5MjE2OTU2OX0.7e8IUXV88fYJ23WSsZyKicHBPcGjvsLOl1eDALHpJrw';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // 2. LÓGICA DE AUTENTICACIÓN
+        // AUTENTICACIÓN
         async function login() {
+            const btn = document.getElementById('btn-login');
             const email = document.getElementById('auth-email').value;
-            const { error } = await supabase.auth.signInWithOtp({ email });
-            if (error) alert(error.message);
-            else alert("¡Revisa tu correo! Te enviamos un link de acceso.");
+            if(!email) return alert("Ingresa un email válido");
+
+            btn.innerText = "ENVIANDO...";
+            btn.disabled = true;
+
+            const { error } = await supabase.auth.signInWithOtp({ 
+                email,
+                options: { emailRedirectTo: window.location.href }
+            });
+
+            if (error) {
+                alert("Error: " + error.message);
+                btn.innerText = "ENVIAR MAGIC LINK";
+                btn.disabled = false;
+            } else {
+                alert("¡Link enviado! Revisa tu bandeja de entrada.");
+                btn.innerText = "REVISA TU CORREO";
+            }
         }
 
-        async function checkUser() {
+        async function logout() {
+            await supabase.auth.signOut();
+            location.reload();
+        }
+
+        async function checkSession() {
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
                 document.getElementById('auth-section').classList.add('hidden');
+                document.getElementById('main-dashboard').classList.remove('hidden');
                 loadUserData(session.user);
             }
         }
 
-        // 3. CARGAR DATOS
+        // DATOS DE USUARIO
         async function loadUserData(user) {
-            let { data: perfil } = await supabase.from('perfiles').select('*').eq('id', user.id).single();
+            let { data: perfil, error } = await supabase.from('perfiles').select('*').eq('id', user.id).single();
             
             if (perfil) {
-                document.getElementById('display-nombre').innerText = `Bienvenido, ${perfil.nombre_usuario || 'Guerrero'}`;
+                document.getElementById('display-nombre').innerText = `Bienvenido, Guerrero ${perfil.nombre_usuario || ''}`;
                 document.getElementById('racha-val').innerText = perfil.racha_dias || 0;
                 document.getElementById('calorias-val').innerText = perfil.calorias_totales || 0;
-                document.getElementById('tiger-status').innerText = `Tigre de ${perfil.nombre_usuario}`;
+                document.getElementById('objetivo-val').innerText = perfil.objetivo ? perfil.objetivo.split(' ')[0] : '---';
+                document.getElementById('tiger-status').innerText = `TIGRE DE ${perfil.nombre_usuario || 'ALPHA'}`;
+                
+                if(perfil.racha_dias > 0) {
+                    document.getElementById('tiger-emoji').innerText = "🐅";
+                    document.getElementById('frase-motivadora').innerText = "Tu tigre está despierto y listo para la acción.";
+                }
             }
         }
 
-        // 4. GUARDAR DATOS
         async function guardarCambios() {
-            const nuevoNombre = document.getElementById('input-nombre').value;
-            const nuevoObjetivo = document.getElementById('input-objetivo').value;
+            const nombre = document.getElementById('input-nombre').value;
+            const objetivo = document.getElementById('input-objetivo').value;
             const { data: { user } } = await supabase.auth.getUser();
 
-            if (user) {
+            if (user && nombre) {
                 const { error } = await supabase.from('perfiles').upsert({ 
                     id: user.id, 
-                    nombre_usuario: nuevoNombre, 
-                    objetivo: nuevoObjetivo 
+                    nombre_usuario: nombre, 
+                    objetivo: objetivo 
                 });
 
                 if (!error) {
-                    location.reload(); // Recarga para ver cambios
+                    cerrarModal();
+                    location.reload();
                 } else {
-                    alert("Error: " + error.message);
+                    alert("Error al actualizar: " + error.message);
                 }
+            } else {
+                alert("Por favor ingresa un nombre.");
+            }
+        }
+
+        async function registrarEntrenamiento() {
+            const { data: { user } } = await supabase.auth.getUser();
+            let { data: perfil } = await supabase.from('perfiles').select('*').eq('id', user.id).single();
+
+            const nuevaRacha = (perfil.racha_dias || 0) + 1;
+            const nuevasCals = (perfil.calorias_totales || 0) + 200;
+
+            const { error } = await supabase.from('perfiles').upsert({
+                id: user.id,
+                racha_dias: nuevaRacha,
+                calorias_totales: nuevasCals
+            });
+
+            if(!error) {
+                alert("¡Entrenamiento registrado! +200 Calorías 🔥");
+                location.reload();
             }
         }
 
         function abrirModal() { document.getElementById('modal-editar').classList.remove('hidden'); }
         function cerrarModal() { document.getElementById('modal-editar').classList.add('hidden'); }
-        function startWorkout() { alert("¡Entrenamiento iniciado! Rugido de Tigre 🐯🔥"); }
 
-        // Inicializar
+        // Inicialización
         lucide.createIcons();
-        checkUser();
+        checkSession();
     </script>
 </body>
 </html>
