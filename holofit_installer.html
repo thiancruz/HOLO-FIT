@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOLO-FIT — Instalador de Base de Datos</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0a0a0f;
+    --surface:  #111118;
+    --border:   #1e1e2e;
+    --border2:  #2a2a3e;
+    --accent:   #f97316;
+    --accent2:  #fb923c;
+    --green:    #22d3a0;
+    --red:      #f43f5e;
+    --yellow:   #fbbf24;
+    --text:     #e2e2f0;
+    --muted:    #6b6b8a;
+    --mono:     'JetBrains Mono', monospace;
+    --display:  'Syne', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 80px;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 720px;
+    animation: fadeUp .5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .logo-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .logo-text {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+
+  .logo-text span { color: var(--accent); }
+
+  header p {
+    color: var(--muted);
+    font-size: 14px;
+    font-family: var(--mono);
+    letter-spacing: 0.04em;
+  }
+
+  /* Warning banner */
+  .warning {
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 32px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .warning-icon { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+
+  .warning p {
+    font-size: 13px;
+    font-family: var(--mono);
+    color: var(--yellow);
+    line-height: 1.6;
+  }
+
+  .warning strong { color: #fff; }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border2);
+  }
+
+  /* Form fields */
+  .field { margin-bottom: 18px; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--muted);
+    margin-bottom: 7px;
+    letter-spacing: 0.05em;
+  }
+
+  label span {
+    color: var(--accent);
+    margin-left: 4px;
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    outline: none;
+    transition: border-color .2s;
+  }
+
+  input:focus {
+    border-color: var(--accent);
+  }
+
+  input::placeholder { color: var(--muted); }
+
+  .field-hint {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    margin-top: 5px;
+    line-height: 1.5;
+  }
+
+  .field-hint a {
+    color: var(--accent2);
+    text-decoration: none;
+  }
+
+  /* Progress steps */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 20px;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    opacity: 0.4;
+    transition: opacity .3s;
+    position: relative;
+  }
+
+  .step:last-child { border-bottom: none; }
+  .step.active    { opacity: 1; }
+  .step.done      { opacity: 1; }
+  .step.error-s   { opacity: 1; }
+
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--border2);
+    border: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-family: var(--mono);
+    font-weight: 500;
+    flex-shrink: 0;
+    transition: background .3s, border-color .3s;
+  }
+
+  .step.active .step-num {
+    background: rgba(249, 115, 22, 0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .step.done .step-num {
+    background: rgba(34, 211, 160, 0.12);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .step.error-s .step-num {
+    background: rgba(244, 63, 94, 0.12);
+    border-color: var(--red);
+    color: var(--red);
+  }
+
+  .step-info { flex: 1; }
+
+  .step-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .step-desc {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+
+  .step-status {
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 3px 8px;
+    border-radius: 4px;
+    align-self: center;
+    flex-shrink: 0;
+  }
+
+  .step.active .step-status  { background: rgba(249,115,22,.12); color: var(--accent);  }
+  .step.done   .step-status  { background: rgba(34,211,160,.10); color: var(--green);   }
+  .step.error-s .step-status { background: rgba(244,63,94,.10);  color: var(--red);     }
+
+  /* Spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border: 2px solid transparent;
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+
+  /* Log output */
+  .log-box {
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.8;
+    max-height: 200px;
+    overflow-y: auto;
+    color: var(--muted);
+    display: none;
+  }
+
+  .log-box.visible { display: block; }
+
+  .log-ok     { color: var(--green); }
+  .log-err    { color: var(--red); }
+  .log-info   { color: var(--accent2); }
+
+  /* Button */
+  .btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--display);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: background .2s, transform .15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn:hover:not(:disabled) { background: var(--accent2); transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-shine::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    animation: shine 1.4s infinite;
+  }
+
+  @keyframes shine {
+    to { left: 160%; }
+  }
+
+  /* Result banner */
+  .result {
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 16px;
+    display: none;
+  }
+
+  .result.success {
+    display: block;
+    background: rgba(34,211,160,.08);
+    border: 1px solid rgba(34,211,160,.25);
+    color: var(--green);
+  }
+
+  .result.fail {
+    display: block;
+    background: rgba(244,63,94,.08);
+    border: 1px solid rgba(244,63,94,.25);
+    color: var(--red);
+  }
+
+  .result strong { color: #fff; display: block; margin-bottom: 4px; font-family: var(--display); font-size: 14px; }
+
+  /* Table count */
+  .table-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .tbl-chip {
+    background: var(--border);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    transition: border-color .3s, color .3s;
+  }
+
+  .tbl-chip.created {
+    border-color: rgba(34,211,160,.3);
+    color: var(--green);
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🐯</div>
+      <div class="logo-text">HOLO<span>-FIT</span></div>
+    </div>
+    <p>// instalador de base de datos — supabase postgresql</p>
+  </header>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <p>
+      <strong>Solo usar localmente.</strong> Nunca subas este archivo a un servidor público.<br>
+      La Service Role Key tiene acceso total a tu base de datos.
+      Encuéntrala en Supabase → Project Settings → API → <em>service_role</em>.
+    </p>
+  </div>
+
+  <!-- Credenciales -->
+  <div class="card">
+    <div class="card-title">01 — Credenciales de Supabase</div>
+
+    <div class="field">
+      <label>Project URL <span>*</span></label>
+      <input type="text" id="url" placeholder="https://xxxxxxxxxxx.supabase.co">
+      <div class="field-hint">
+        Supabase → Project Settings → API → Project URL
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Service Role Key <span>*</span></label>
+      <input type="password" id="key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+      <div class="field-hint">
+        Supabase → Project Settings → API → <strong>service_role</strong> (no la anon key)
+      </div>
+    </div>
+  </div>
+
+  <!-- Pasos -->
+  <div class="card">
+    <div class="card-title">02 — Proceso de instalación</div>
+
+    <div class="steps" id="steps">
+      <div class="step" id="s1">
+        <div class="step-num">1</div>
+        <div class="step-info">
+          <div class="step-name">Verificar conexión</div>
+          <div class="step-desc">Ping a la API de Supabase con las credenciales</div>
+        </div>
+        <div class="step-status">pendiente</div>
+      </div>
+      <div class="step" id="s2">
+        <div class="step-num">2</div>
+        <div class="step-info">
+          <div class="step-name">Crear extensiones</div>
+          <div class="step-desc">uuid-ossp para generación de UUIDs</div>
+        </div>
+        <div class="step-status">pendiente</div>
+      </div>
+      <div class="step" id="s3">
+        <div class="step-num">3</div>
+        <div class="step-info">
+          <div class="step-name">Crear tablas principales</div>
+          <div class="step-desc">profiles, skins, tiger_state, exercises, routines</div>
+        </div>
+        <div class="step-status">pendiente</div>
+      </div>
+      <div class="step" id="s4">
+        <div class="step-num">4</div>
+        <div class="step-info">
+          <div class="step-name">Crear tablas de actividad</div>
+          <div class="step-desc">user_routines, workout_logs, streaks, milestones, purchases</div>
+        </div>
+        <div class="step-status">pendiente</div>
+      </div>
+      <div class="step" id="s5">
+        <div class="step-num">5</div>
+        <div class="step-info">
+          <div class="step-name">Funciones y triggers</div>
+          <div class="step-desc">handle_new_user, complete_workout, updated_at</div>
+        </div>
+        <div class="step-status">pendiente</div>
+      </div>
+      <div class="step" id="s6">
+        <div class="step-num">6</div>
+        <div class="step-info">
+          <div class="step-name">Row Level Security</div>
+          <div class="step-desc">Políticas de acceso por usuario</div>
+        </div>
+        <div class="step-status">pendiente</div>
+      </div>
+      <div class="step" id="s7">
+        <div class="step-num">7</div>
+        <div class="step-info">
+          <div class="step-name">Datos seed</div>
+          <div class="step-desc">Hitos iniciales del sistema de gamificación</div>
+        </div>
+        <div class="step-status">pendiente</div>
+      </div>
+    </div>
+
+    <div class="log-box" id="log"></div>
+
+    <div class="table-grid" id="tableGrid" style="display:none">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <button class="btn" id="runBtn" onclick="runInstall()">
+    Instalar Base de Datos
+  </button>
+
+  <div class="result" id="result"></div>
+
+</div>
+
+<script>
+const SQL_BLOCKS = {
+  extensions: `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`,
+
+  tables_core: `
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  auth_user_id     UUID NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
+  username         TEXT UNIQUE,
+  full_name        TEXT,
+  avatar_url       TEXT,
+  fitness_level    TEXT CHECK (fitness_level IN ('beginner','intermediate','advanced')),
+  onboarding_data  JSONB DEFAULT '{}',
+  holo_coins       INT NOT NULL DEFAULT 0 CHECK (holo_coins >= 0),
+  total_workouts   INT NOT NULL DEFAULT 0,
+  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.skins (
+  id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name              TEXT NOT NULL,
+  description       TEXT,
+  lottie_json_url   TEXT,
+  preview_image_url TEXT,
+  price_coins       INT NOT NULL DEFAULT 0 CHECK (price_coins >= 0),
+  price_usd_cents   INT DEFAULT NULL,
+  is_premium        BOOLEAN NOT NULL DEFAULT FALSE,
+  rarity            TEXT NOT NULL DEFAULT 'common' CHECK (rarity IN ('common','rare','epic','legendary')),
+  is_active         BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.tiger_state (
+  id                    UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  profile_id            UUID NOT NULL UNIQUE REFERENCES public.profiles(id) ON DELETE CASCADE,
+  current_state         TEXT NOT NULL DEFAULT 'dormant' CHECK (current_state IN ('dormant','active','fire','legendary')),
+  evolution_level       INT NOT NULL DEFAULT 1 CHECK (evolution_level BETWEEN 1 AND 5),
+  equipped_skin_id      UUID REFERENCES public.skins(id) ON DELETE SET NULL,
+  streak_days           INT NOT NULL DEFAULT 0 CHECK (streak_days >= 0),
+  last_activity_at      TIMESTAMPTZ,
+  streak_frozen_at      TIMESTAMPTZ,
+  unlocked_accessories  JSONB NOT NULL DEFAULT '[]',
+  updated_at            TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.exercises (
+  id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name             TEXT NOT NULL,
+  description      TEXT,
+  muscle_group     TEXT NOT NULL,
+  equipment_needed TEXT NOT NULL DEFAULT 'none',
+  sets             INT DEFAULT 3,
+  reps             INT DEFAULT 10,
+  duration_seconds INT DEFAULT NULL,
+  video_url        TEXT,
+  tags             TEXT[] NOT NULL DEFAULT '{}',
+  is_active        BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_exercises_tags   ON public.exercises USING GIN(tags);
+CREATE INDEX IF NOT EXISTS idx_exercises_muscle ON public.exercises(muscle_group);
+
+CREATE TABLE IF NOT EXISTS public.routines (
+  id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name             TEXT NOT NULL,
+  description      TEXT,
+  difficulty       TEXT NOT NULL CHECK (difficulty IN ('beginner','intermediate','advanced')),
+  target_tags      TEXT[] NOT NULL DEFAULT '{}',
+  duration_minutes INT NOT NULL DEFAULT 45,
+  is_active        BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_routines_tags ON public.routines USING GIN(target_tags);
+
+CREATE TABLE IF NOT EXISTS public.routine_exercises (
+  id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  routine_id     UUID NOT NULL REFERENCES public.routines(id) ON DELETE CASCADE,
+  exercise_id    UUID NOT NULL REFERENCES public.exercises(id) ON DELETE CASCADE,
+  order_index    INT NOT NULL DEFAULT 0,
+  sets_override  INT DEFAULT NULL,
+  reps_override  INT DEFAULT NULL,
+  UNIQUE (routine_id, exercise_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_re_routine ON public.routine_exercises(routine_id);
+`,
+
+  tables_activity: `
+CREATE TABLE IF NOT EXISTS public.user_routines (
+  id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  profile_id     UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  routine_id     UUID NOT NULL REFERENCES public.routines(id),
+  assigned_date  DATE NOT NULL DEFAULT CURRENT_DATE,
+  is_completed   BOOLEAN NOT NULL DEFAULT FALSE,
+  completed_at   TIMESTAMPTZ DEFAULT NULL,
+  coins_earned   INT NOT NULL DEFAULT 0,
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (profile_id, assigned_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_ur_profile ON public.user_routines(profile_id);
+CREATE INDEX IF NOT EXISTS idx_ur_date    ON public.user_routines(assigned_date);
+
+CREATE TABLE IF NOT EXISTS public.workout_logs (
+  id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  profile_id       UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  user_routine_id  UUID REFERENCES public.user_routines(id) ON DELETE SET NULL,
+  started_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  finished_at      TIMESTAMPTZ,
+  duration_minutes INT,
+  coins_earned     INT NOT NULL DEFAULT 0,
+  exercises_done   JSONB NOT NULL DEFAULT '[]',
+  notes            TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_wl_profile ON public.workout_logs(profile_id);
+CREATE INDEX IF NOT EXISTS idx_wl_started ON public.workout_logs(started_at);
+
+CREATE TABLE IF NOT EXISTS public.streaks (
+  id                   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  profile_id           UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  streak_date          DATE NOT NULL DEFAULT CURRENT_DATE,
+  was_active           BOOLEAN NOT NULL DEFAULT FALSE,
+  streak_count_at_day  INT NOT NULL DEFAULT 0,
+  UNIQUE (profile_id, streak_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_streaks_profile ON public.streaks(profile_id, streak_date DESC);
+
+CREATE TABLE IF NOT EXISTS public.milestones (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name            TEXT NOT NULL,
+  description     TEXT,
+  badge_icon_url  TEXT,
+  trigger_type    TEXT NOT NULL CHECK (trigger_type IN ('streak_days','total_workouts','coins_earned','evolution_level','first_login','skin_purchased')),
+  trigger_value   INT NOT NULL DEFAULT 1,
+  coins_reward    INT NOT NULL DEFAULT 0,
+  is_active       BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.user_milestones (
+  id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  profile_id    UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  milestone_id  UUID NOT NULL REFERENCES public.milestones(id),
+  unlocked_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (profile_id, milestone_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_um_profile ON public.user_milestones(profile_id);
+
+CREATE TABLE IF NOT EXISTS public.skin_purchases (
+  id                 UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  profile_id         UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  skin_id            UUID NOT NULL REFERENCES public.skins(id),
+  payment_method     TEXT NOT NULL CHECK (payment_method IN ('holo_coins','stripe')),
+  stripe_payment_id  TEXT DEFAULT NULL,
+  coins_spent        INT NOT NULL DEFAULT 0,
+  purchased_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (profile_id, skin_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sp_profile ON public.skin_purchases(profile_id);
+`,
+
+  functions: `
+CREATE OR REPLACE FUNCTION public.handle_updated_at()
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
+$$;
+
+DROP TRIGGER IF EXISTS profiles_updated_at ON public.profiles;
+CREATE TRIGGER profiles_updated_at
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+DROP TRIGGER IF EXISTS tiger_state_updated_at ON public.tiger_state;
+CREATE TRIGGER tiger_state_updated_at
+  BEFORE UPDATE ON public.tiger_state
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
+DECLARE new_profile_id UUID;
+BEGIN
+  INSERT INTO public.profiles (auth_user_id, username, full_name, avatar_url)
+  VALUES (NEW.id, NEW.raw_user_meta_data->>'username', NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'avatar_url')
+  RETURNING id INTO new_profile_id;
+  INSERT INTO public.tiger_state (profile_id) VALUES (new_profile_id);
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+CREATE OR REPLACE FUNCTION public.complete_workout(p_user_routine_id UUID, p_exercises_done JSONB DEFAULT '[]', p_notes TEXT DEFAULT NULL)
+RETURNS JSONB LANGUAGE plpgsql SECURITY DEFINER AS $$
+DECLARE
+  v_profile_id  UUID;
+  v_coins       INT := 50;
+  v_log_id      UUID;
+  v_streak      INT;
+BEGIN
+  SELECT profile_id INTO v_profile_id FROM public.user_routines WHERE id = p_user_routine_id;
+  IF NOT FOUND THEN RETURN jsonb_build_object('error','user_routine not found'); END IF;
+  UPDATE public.user_routines SET is_completed=TRUE, completed_at=NOW(), coins_earned=v_coins WHERE id=p_user_routine_id;
+  INSERT INTO public.workout_logs (profile_id,user_routine_id,finished_at,coins_earned,exercises_done,notes)
+  VALUES (v_profile_id,p_user_routine_id,NOW(),v_coins,p_exercises_done,p_notes) RETURNING id INTO v_log_id;
+  UPDATE public.profiles SET holo_coins=holo_coins+v_coins, total_workouts=total_workouts+1 WHERE id=v_profile_id;
+  INSERT INTO public.streaks (profile_id,streak_date,was_active,streak_count_at_day) VALUES (v_profile_id,CURRENT_DATE,TRUE,1)
+  ON CONFLICT (profile_id,streak_date) DO UPDATE SET was_active=TRUE;
+  SELECT COUNT(*) INTO v_streak FROM public.streaks WHERE profile_id=v_profile_id AND was_active=TRUE AND streak_date >= CURRENT_DATE - INTERVAL '60 days';
+  UPDATE public.tiger_state SET streak_days=v_streak, last_activity_at=NOW(), streak_frozen_at=NULL,
+    current_state=CASE WHEN v_streak>=30 THEN 'legendary' WHEN v_streak>=7 THEN 'fire' ELSE 'active' END,
+    evolution_level=LEAST(5,1+(v_streak/10)) WHERE profile_id=v_profile_id;
+  RETURN jsonb_build_object('success',TRUE,'workout_log',v_log_id,'coins_earned',v_coins,'streak_days',v_streak);
+END;
+$$;
+`,
+
+  rls: `
+ALTER TABLE public.profiles        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.tiger_state     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_routines   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.workout_logs    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.streaks         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_milestones ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.skin_purchases  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.exercises       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.routines        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.skins           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.milestones      ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "own profile"   ON public.profiles;
+DROP POLICY IF EXISTS "own tiger"     ON public.tiger_state;
+DROP POLICY IF EXISTS "own routines"  ON public.user_routines;
+DROP POLICY IF EXISTS "own logs"      ON public.workout_logs;
+DROP POLICY IF EXISTS "own streaks"   ON public.streaks;
+DROP POLICY IF EXISTS "own milestones" ON public.user_milestones;
+DROP POLICY IF EXISTS "own purchases" ON public.skin_purchases;
+DROP POLICY IF EXISTS "public read exercises"  ON public.exercises;
+DROP POLICY IF EXISTS "public read routines"   ON public.routines;
+DROP POLICY IF EXISTS "public read skins"      ON public.skins;
+DROP POLICY IF EXISTS "public read milestones" ON public.milestones;
+
+CREATE POLICY "own profile"    ON public.profiles        FOR ALL USING (auth.uid() = auth_user_id);
+CREATE POLICY "own tiger"      ON public.tiger_state     FOR ALL USING (profile_id=(SELECT id FROM public.profiles WHERE auth_user_id=auth.uid()));
+CREATE POLICY "own routines"   ON public.user_routines   FOR ALL USING (profile_id=(SELECT id FROM public.profiles WHERE auth_user_id=auth.uid()));
+CREATE POLICY "own logs"       ON public.workout_logs    FOR ALL USING (profile_id=(SELECT id FROM public.profiles WHERE auth_user_id=auth.uid()));
+CREATE POLICY "own streaks"    ON public.streaks         FOR ALL USING (profile_id=(SELECT id FROM public.profiles WHERE auth_user_id=auth.uid()));
+CREATE POLICY "own milestones" ON public.user_milestones FOR ALL USING (profile_id=(SELECT id FROM public.profiles WHERE auth_user_id=auth.uid()));
+CREATE POLICY "own purchases"  ON public.skin_purchases  FOR ALL USING (profile_id=(SELECT id FROM public.profiles WHERE auth_user_id=auth.uid()));
+CREATE POLICY "public read exercises"  ON public.exercises  FOR SELECT USING (is_active=TRUE);
+CREATE POLICY "public read routines"   ON public.routines   FOR SELECT USING (is_active=TRUE);
+CREATE POLICY "public read skins"      ON public.skins      FOR SELECT USING (is_active=TRUE);
+CREATE POLICY "public read milestones" ON public.milestones FOR SELECT USING (is_active=TRUE);
+`,
+
+  seed: `
+INSERT INTO public.milestones (name, description, trigger_type, trigger_value, coins_reward)
+SELECT * FROM (VALUES
+  ('Primer Rugido',    'Completa tu primer entrenamiento',        'total_workouts', 1,   100),
+  ('Racha de Fuego',   'Mantén 7 días consecutivos de actividad', 'streak_days',    7,   250),
+  ('Imparable',        'Alcanza 30 días de racha',                'streak_days',    30, 1000),
+  ('Veterano',         'Completa 50 entrenamientos',              'total_workouts', 50,  500),
+  ('Tigre de Leyenda', 'Alcanza nivel de evolución 5',            'evolution_level',5,   750),
+  ('Primer Accesorio', 'Compra tu primera skin en la tienda',     'skin_purchased', 1,    50)
+) AS v(name,description,trigger_type,trigger_value,coins_reward)
+WHERE NOT EXISTS (SELECT 1 FROM public.milestones LIMIT 1);
+`
+};
+
+const TABLES = ['profiles','skins','tiger_state','exercises','routines','routine_exercises','user_routines','workout_logs','streaks','milestones','user_milestones','skin_purchases'];
+
+let running = false;
+
+function log(msg, cls = '') {
+  const box = document.getElementById('log');
+  box.classList.add('visible');
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  line.innerHTML = msg;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+function setStep(n, state, statusText) {
+  const el = document.getElementById('s' + n);
+  el.className = 'step ' + state;
+  el.querySelector('.step-status').innerHTML = statusText;
+}
+
+async function execSQL(url, key, sql) {
+  const res = await fetch(`${url}/rest/v1/rpc/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': key,
+      'Authorization': `Bearer ${key}`,
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({ query: sql })
+  });
+
+  // Supabase no expone un endpoint SQL directo en REST; usar el endpoint correcto
+  const res2 = await fetch(`${url}/rest/v1/`, {
+    headers: { 'apikey': key, 'Authorization': `Bearer ${key}` }
+  });
+  return res2;
+}
+
+async function runSQL(url, key, sql) {
+  const endpoint = `${url}/pg/query`;
+  try {
+    const r = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': key,
+        'Authorization': `Bearer ${key}`
+      },
+      body: JSON.stringify({ query: sql })
+    });
+    const text = await r.text();
+    let json;
+    try { json = JSON.parse(text); } catch { json = { raw: text }; }
+    return { ok: r.ok, status: r.status, data: json };
+  } catch (e) {
+    return { ok: false, status: 0, data: { message: e.message } };
+  }
+}
+
+async function runInstall() {
+  if (running) return;
+  const url = document.getElementById('url').value.trim().replace(/\/$/, '');
+  const key = document.getElementById('key').value.trim();
+
+  if (!url || !key) {
+    alert('Completa la URL y la Service Role Key antes de continuar.');
+    return;
+  }
+
+  if (!url.startsWith('https://')) {
+    alert('La URL debe comenzar con https://');
+    return;
+  }
+
+  running = true;
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true;
+  btn.classList.add('btn-shine');
+  btn.textContent = 'Instalando...';
+
+  document.getElementById('result').className = 'result';
+  document.getElementById('result').innerHTML = '';
+
+  const steps = [
+    { id: 's1', name: 'Verificar conexión',       key: null,              sql: null },
+    { id: 's2', name: 'Extensiones',              key: 'extensions',      sql: SQL_BLOCKS.extensions },
+    { id: 's3', name: 'Tablas principales',        key: 'tables_core',     sql: SQL_BLOCKS.tables_core },
+    { id: 's4', name: 'Tablas de actividad',       key: 'tables_activity', sql: SQL_BLOCKS.tables_activity },
+    { id: 's5', name: 'Funciones y triggers',      key: 'functions',       sql: SQL_BLOCKS.functions },
+    { id: 's6', name: 'Row Level Security',        key: 'rls',             sql: SQL_BLOCKS.rls },
+    { id: 's7', name: 'Datos seed',                key: 'seed',            sql: SQL_BLOCKS.seed },
+  ];
+
+  let allOk = true;
+
+  for (let i = 0; i < steps.length; i++) {
+    const sn = i + 1;
+    setStep(sn, 'active', '<span class="spin"></span> ejecutando');
+    await new Promise(r => setTimeout(r, 300));
+
+    if (sn === 1) {
+      // Verificación de conexión
+      try {
+        const r = await fetch(`${url}/rest/v1/`, {
+          headers: { 'apikey': key, 'Authorization': `Bearer ${key}` }
+        });
+        if (r.ok || r.status === 200 || r.status === 400) {
+          setStep(sn, 'done', '✓ conectado');
+          log(`<span class="log-ok">✓ Conexión establecida con ${url}</span>`);
+        } else {
+          throw new Error(`HTTP ${r.status}`);
+        }
+      } catch (e) {
+        setStep(sn, 'error-s', '✗ falló');
+        log(`<span class="log-err">✗ No se pudo conectar: ${e.message}</span>`);
+        allOk = false;
+        break;
+      }
+      continue;
+    }
+
+    const result = await runSQL(url, key, steps[i].sql);
+
+    if (result.ok || result.status === 200 || result.status === 204) {
+      setStep(sn, 'done', '✓ listo');
+      log(`<span class="log-ok">✓ ${steps[i].name} completado</span>`);
+    } else {
+      const msg = result.data?.message || result.data?.error || JSON.stringify(result.data);
+      // Supabase puede retornar 200 con errores embebidos, o 400 para SQL que ya existe
+      if (msg && (msg.includes('already exists') || msg.includes('duplicate') || result.status === 409)) {
+        setStep(sn, 'done', '✓ ya existe');
+        log(`<span class="log-info">ℹ ${steps[i].name} — ya instalado, omitiendo</span>`);
+      } else {
+        setStep(sn, 'error-s', '✗ error');
+        log(`<span class="log-err">✗ ${steps[i].name}: ${msg}</span>`);
+        log(`<span class="log-info">  Tip: verifica tu Service Role Key y que el proyecto esté activo</span>`);
+        allOk = false;
+      }
+    }
+
+    await new Promise(r => setTimeout(r, 250));
+  }
+
+  // Mostrar tabla de tablas creadas
+  const grid = document.getElementById('tableGrid');
+  grid.style.display = 'grid';
+  grid.innerHTML = TABLES.map(t =>
+    `<div class="tbl-chip ${allOk ? 'created' : ''}">${t}</div>`
+  ).join('');
+
+  const resultEl = document.getElementById('result');
+  if (allOk) {
+    resultEl.className = 'result success';
+    resultEl.innerHTML = `
+      <strong>Instalación completada</strong>
+      Las ${TABLES.length} tablas, triggers, funciones y políticas RLS están listas en tu proyecto de Supabase.
+      Ya puedes iniciar el desarrollo de HOLO-FIT.
+    `;
+  } else {
+    resultEl.className = 'result fail';
+    resultEl.innerHTML = `
+      <strong>Instalación parcial</strong>
+      Algunos pasos fallaron. Revisa el log de arriba y verifica que la Service Role Key sea correcta
+      y que el proyecto de Supabase esté activo. También puedes ejecutar el archivo .sql directamente
+      en el SQL Editor de Supabase como alternativa.
+    `;
+  }
+
+  btn.disabled = false;
+  btn.classList.remove('btn-shine');
+  btn.textContent = allOk ? 'Instalación completa ✓' : 'Reintentar instalación';
+  running = false;
+}
+</script>
+</body>
+</html>
