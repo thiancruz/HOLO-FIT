@@ -1,240 +1,465 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOLO-FIT | Alpha Trainer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body { background-color: #020617; color: white; font-family: 'Inter', sans-serif; }
-        .holo-card { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.2); backdrop-filter: blur(12px); }
-        .btn-primary { background: linear-gradient(90deg, #0ea5e9, #6366f1); transition: all 0.3s ease; }
-        .btn-completed { background: linear-gradient(90deg, #ef4444, #991b1b) !important; }
-        .hidden { display: none !important; }
-        .exercise-detail { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
-        .exercise-card.active .exercise-detail { max-height: 600px; margin-top: 15px; }
-        .day-btn { transition: all 0.2s ease; cursor: pointer; }
-        .day-active { border-color: #38bdf8 !important; background: rgba(56, 189, 248, 0.1); scale: 1.05; }
-        .day-done { border-color: #ef4444 !important; background: rgba(239, 68, 68, 0.2); color: #f87171; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOLO-FIT | Alpha Trainer</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#020617;color:#fff;font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+  .holo-card{background:rgba(15,23,42,0.85);border:1px solid rgba(56,189,248,0.18);backdrop-filter:blur(12px)}
+  .btn-primary{background:linear-gradient(90deg,#0ea5e9,#6366f1);border:none;color:#fff;cursor:pointer;transition:all .25s}
+  .btn-primary:hover{opacity:.9;transform:scale(1.02)}
+  .btn-primary:active{transform:scale(.97)}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  input,select{background:#0f172a;border:1px solid #334155;color:#fff;border-radius:12px;padding:14px 16px;width:100%;font-size:15px;outline:none}
+  input:focus,select:focus{border-color:#38bdf8}
+  select option{background:#0f172a}
+ 
+  #modal-encuesta{position:fixed;inset:0;background:#020617;z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
+  #modal-encuesta.hidden{display:none}
+ 
+  #modal-celebracion{position:fixed;inset:0;background:rgba(2,6,23,.92);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .4s}
+  #modal-celebracion.show{opacity:1;pointer-events:all}
+  .confetti-wrap{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+  .confetti-piece{position:absolute;top:-12px;width:10px;height:10px;border-radius:2px;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+ 
+  #timer-overlay{position:fixed;inset:0;background:rgba(2,6,23,.95);z-index:350;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+  #timer-overlay.show{opacity:1;pointer-events:all}
+  .timer-circle{position:relative;width:200px;height:200px}
+  .timer-svg{transform:rotate(-90deg)}
+  #timer-progress{transition:stroke-dashoffset .9s linear;stroke-linecap:round}
+  #timer-number{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:900;color:#38bdf8;font-style:italic}
+ 
+  .exercise-card{transition:all .3s;cursor:pointer}
+  .exercise-card:hover{transform:translateY(-2px)}
+  .exercise-detail{max-height:0;overflow:hidden;transition:max-height .45s ease}
+  .exercise-card.active .exercise-detail{max-height:700px;margin-top:14px}
+  .check-btn{width:28px;height:28px;border-radius:50%;border:2px solid #38bdf8;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0}
+  .check-btn.done{background:#22c55e;border-color:#22c55e}
+  .check-btn:hover{transform:scale(1.15)}
+ 
+  .progress-track{background:#1e293b;border-radius:999px;height:6px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#0ea5e9,#6366f1);border-radius:999px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+ 
+  .day-btn{transition:all .2s;cursor:pointer;flex:1;padding:8px 4px;border-radius:12px;border:1px solid #1e293b;text-align:center;font-size:10px;font-weight:800;text-transform:uppercase;color:#64748b;display:flex;flex-direction:column;align-items:center;gap:3px}
+  .day-btn:hover{border-color:#38bdf840;color:#94a3b8}
+  .day-active{border-color:#38bdf8!important;background:rgba(56,189,248,.12);color:#38bdf8!important;transform:scale(1.05)}
+  .day-done{border-color:#ef444480!important;background:rgba(239,68,68,.15);color:#f87171!important}
+ 
+  .edu-tip{background:rgba(56,189,248,.07);border-left:3px solid #0ea5e9;border-radius:0 10px 10px 0;padding:10px 14px;font-size:12px;line-height:1.6;color:#94a3b8}
+  .edu-tip strong{color:#38bdf8;font-weight:700}
+ 
+  .set-dot{width:22px;height:22px;border-radius:50%;border:2px solid #334155;background:transparent;cursor:pointer;transition:all .2s}
+  .set-dot.done{background:#6366f1;border-color:#6366f1}
+  .set-dot:hover{transform:scale(1.2)}
+ 
+  #main-dashboard{padding:20px;max-width:600px;margin:0 auto;padding-bottom:120px}
+  #main-dashboard.hidden{display:none}
+ 
+  .stat-pill{background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:6px 12px;font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase}
+  .stat-pill span{color:#e2e8f0;font-size:14px;display:block;font-weight:900}
+ 
+  @keyframes pulse-ring{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.6;transform:scale(1.08)}}
+  .avatar-ring{animation:pulse-ring 2.5s ease-in-out infinite}
+  .btn-completed{background:linear-gradient(90deg,#ef4444,#991b1b)!important}
+</style>
 </head>
-<body class="p-4 md:p-8 max-w-2xl mx-auto pb-28">
-
-    <div id="main-dashboard" class="hidden">
-        <header class="flex justify-between items-start mb-6">
-            <div>
-                <h1 class="text-3xl font-black text-sky-500 italic tracking-tighter">HOLO-FIT</h1>
-                <p id="display-nombre" class="text-slate-500 text-xs font-bold uppercase tracking-widest"></p>
-            </div>
-            <div class="text-right">
-                <div class="flex items-center justify-end text-red-500 font-black text-2xl italic">
-                    <i data-lucide="flame" class="mr-1 fill-current"></i> <span id="racha-val">0</span>
-                </div>
-                <p class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Racha Total</p>
-            </div>
-        </header>
-
-        <div class="mb-8">
-            <p class="text-[10px] text-slate-500 font-bold uppercase mb-3 tracking-widest italic">Selecciona el día de entrenamiento:</p>
-            <div id="semana-nav" class="flex justify-between gap-1"></div>
-        </div>
-
-        <div class="flex flex-col items-center mb-6">
-            <div class="relative w-32 h-32 mb-2 flex items-center justify-center">
-                <div class="absolute inset-0 bg-sky-500/5 rounded-full animate-pulse"></div>
-                <span id="avatar-emoji" class="text-7xl drop-shadow-[0_0_15px_rgba(56,189,248,0.4)]"></span>
-            </div>
-            <h2 id="view-day-name" class="text-xl font-black italic text-white uppercase italic tracking-tight">Cargando...</h2>
-            <p id="lugar-tag" class="text-[9px] text-sky-400 font-bold uppercase"></p>
-        </div>
-
-        <div id="ejercicios-list" class="space-y-4 mb-8"></div>
-
-        <button id="btn-finalizar" onclick="completarMision()" class="btn-primary w-full py-5 rounded-2xl font-black text-lg shadow-xl uppercase tracking-tighter hover:scale-[1.02] active:scale-95 transition-all">
-            MARCAR DÍA COMO COMPLETADO
-        </button>
+<body>
+ 
+<div id="main-dashboard" class="hidden">
+  <header style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px">
+    <div>
+      <h1 style="font-size:28px;font-weight:900;color:#0ea5e9;font-style:italic;letter-spacing:-.03em">HOLO-FIT</h1>
+      <p id="display-nombre" style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.12em"></p>
     </div>
-
-    <div id="modal-encuesta" class="fixed inset-0 bg-slate-950 z-[200] flex items-center justify-center p-4">
-        <div class="holo-card p-8 rounded-[2.5rem] w-full max-w-md border-2 border-sky-500/30">
-            <h2 class="text-3xl font-black text-sky-400 italic mb-6">NUEVO GUERRERO</h2>
-            <div class="space-y-4">
-                <input type="text" id="in-nombre" placeholder="TU NOMBRE" class="w-full p-4 rounded-xl bg-slate-900 border border-slate-700 outline-none">
-                <select id="in-objetivo" class="w-full p-4 rounded-xl bg-slate-900 border border-slate-700 outline-none">
-                    <option value="Musculo">Ganar Músculo 🦁</option>
-                    <option value="Grasa">Perder Grasa 🐥</option>
-                    <option value="Resistencia">Resistencia 🐯</option>
-                </select>
-                <select id="in-lugar" class="w-full p-4 rounded-xl bg-slate-900 border border-slate-700 outline-none">
-                    <option value="casa">En Casa</option>
-                    <option value="gym">En Gimnasio</option>
-                </select>
-            </div>
-            <button onclick="configurar()" class="btn-primary w-full py-4 rounded-xl font-black mt-8 uppercase">INICIAR SISTEMA</button>
-        </div>
+    <div style="text-align:right">
+      <div style="display:flex;align-items:center;justify-content:flex-end;color:#ef4444;font-weight:900;font-size:22px;font-style:italic;gap:4px">
+        🔥 <span id="racha-val">0</span>
+      </div>
+      <p style="font-size:9px;color:#64748b;text-transform:uppercase;font-weight:700;letter-spacing:.12em">Racha Total</p>
     </div>
-
-    <script>
-        const FRASES = [
-            "¡Nivel Alpha alcanzado! El tigre ruge hoy.",
-            "Dolor es debilidad saliendo del cuerpo. ¡Bien hecho!",
-            "Un día más cerca de tu mejor versión.",
-            "¡Bestial! Los límites son mentales.",
-            "Misión cumplida. Tu disciplina es tu superpoder."
-        ];
-
-        const RUTINAS_BASE = {
-            Musculo: { avatar: "🦁", ejercicios: [
-                {n: "Empuje Alpha", d: "Enfoque en pecho y hombros. Baja en 3 segundos.", s: "4", r: "12", t: "60s", img: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=200"},
-                {n: "Sentadilla Poder", d: "Espalda recta, rompe el paralelo. Siente el peso en los talones.", s: "4", r: "10", t: "90s", img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=200"},
-                {n: "Tirón Vertical", d: "Contracción máxima de dorsales. No uses el balanceo.", s: "3", r: "12", t: "60s", img: "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=200"},
-                {n: "Zancada Explosiva", d: "Paso largo y firme. Controla el equilibrio del núcleo.", s: "4", r: "12/lado", t: "45s", img: "https://images.unsplash.com/photo-1594381898411-846e7d193883?w=200"},
-                {n: "Curl de Poder", d: "Bíceps bajo tensión constante. No estires del todo abajo.", s: "3", r: "15", t: "45s", img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=200"},
-                {n: "Puente de Hierro", d: "Elevación de pelvis. Aprieta glúteos 2 segundos arriba.", s: "4", r: "20", t: "60s", img: "https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=200"}
-            ]},
-            Grasa: { avatar: "🐥", ejercicios: [
-                {n: "Burpees Infierno", d: "Pecho al suelo y salto máximo. Cardio explosivo.", s: "4", r: "15", t: "30s", img: "https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=200"},
-                {n: "Escaladores", d: "Rodillas al pecho lo más rápido posible. Core firme.", s: "4", r: "45s", t: "30s", img: "https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=200"},
-                {n: "Jumping Jacks", d: "Movimiento constante. Mantén el ritmo cardíaco alto.", s: "4", r: "60s", t: "20s", img: "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=200"},
-                {n: "Senta-Salto", d: "Baja en sentadilla y salta lo más alto que puedas.", s: "4", r: "15", t: "30s", img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=200"},
-                {n: "Plancha Dinámica", d: "Pasa de antebrazos a manos sin mover la cadera.", s: "3", r: "12", t: "30s", img: "https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=200"},
-                {n: "Sprint Estático", d: "Corre en el sitio levantando rodillas al máximo.", s: "4", r: "45s", t: "30s", img: "https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=200"}
-            ]},
-            Resistencia: { avatar: "🐯", ejercicios: [
-                {n: "Plancha Abdominal", d: "Cuerpo recto como una tabla. Aprieta todo el core.", s: "4", r: "60s", t: "30s", img: "https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=200"},
-                {n: "Zancada con Salto", d: "Cambia de pierna en el aire. Controla el aterrizaje.", s: "4", r: "12", t: "45s", img: "https://images.unsplash.com/photo-1594381898411-846e7d193883?w=200"},
-                {n: "Flexión Diamante", d: "Manos juntas formando un diamante. Codos pegados.", s: "4", r: "10", t: "60s", img: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=200"},
-                {n: "Paso de Oso", d: "Camina a cuatro patas sin tocar rodillas el suelo.", s: "3", r: "10m", t: "30s", img: "https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=200"},
-                {n: "Fondos", d: "Usa una silla o banco. Baja hasta 90 grados.", s: "4", r: "15", t: "45s", img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=200"},
-                {n: "Sentadilla Isométrica", d: "Apóyate en la pared en 90 grados y aguanta.", s: "3", r: "45s", t: "30s", img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=200"}
-            ]}
-        };
-
-        const DIAS = ["DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB"];
-        let diaSeleccionado = new Date().getDay();
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const p = JSON.parse(localStorage.getItem('holofit_v2'));
-            if (!p) document.getElementById('modal-encuesta').classList.remove('hidden');
-            else render(p);
-        });
-
-        function configurar() {
-            const p = {
-                nombre: document.getElementById('in-nombre').value,
-                objetivo: document.getElementById('in-objetivo').value,
-                lugar: document.getElementById('in-lugar').value,
-                completados: []
-            };
-            if(!p.nombre) return alert("Guerrero, dime tu nombre.");
-            localStorage.setItem('holofit_v2', JSON.stringify(p));
-            document.getElementById('modal-encuesta').classList.add('hidden');
-            render(p);
-        }
-
-        function render(p) {
-            document.getElementById('main-dashboard').classList.remove('hidden');
-            document.getElementById('display-nombre').innerText = `Guerrero ${p.nombre}`;
-            document.getElementById('racha-val').innerText = p.completados.length;
-            document.getElementById('avatar-emoji').innerText = RUTINAS_BASE[p.objetivo].avatar;
-            document.getElementById('lugar-tag').innerText = `Lugar: ${p.lugar}`;
-            
-            renderNav(p);
-            showDay(diaSeleccionado);
-        }
-
-        function renderNav(p) {
-            const nav = document.getElementById('semana-nav');
-            nav.innerHTML = '';
-            const hoy = new Date().getDay();
-            
-            DIAS.forEach((dia, i) => {
-                const done = p.completados.includes(getFechaStr(i));
-                const active = i === diaSeleccionado;
-                
-                nav.innerHTML += `
-                    <div onclick="selectDay(${i})" class="day-btn flex-1 p-2 rounded-xl border flex flex-col items-center text-[10px] font-black 
-                        ${done ? 'day-done' : (active ? 'day-active' : 'bg-slate-900 border-slate-800 text-slate-500')}">
-                        ${dia}
-                        <i data-lucide="${done ? 'check-circle' : (active ? 'circle-dot' : 'circle')}" class="w-3 h-3 mt-1"></i>
-                    </div>
-                `;
-            });
-            lucide.createIcons();
-        }
-
-        function selectDay(i) {
-            diaSeleccionado = i;
-            const p = JSON.parse(localStorage.getItem('holofit_v2'));
-            renderNav(p);
-            showDay(i);
-        }
-
-        function showDay(i) {
-            const p = JSON.parse(localStorage.getItem('holofit_v2'));
-            const ejercicios = RUTINAS_BASE[p.objetivo].ejercicios;
-            document.getElementById('view-day-name').innerText = `Rutina: ${DIAS[i]}`;
-            
-            const list = document.getElementById('ejercicios-list');
-            list.innerHTML = '';
-            ejercicios.forEach(ex => {
-                list.innerHTML += `
-                    <div class="exercise-card holo-card p-5 rounded-2xl border-l-4 border-sky-500 cursor-pointer" onclick="this.classList.toggle('active')">
-                        <div class="flex justify-between items-center text-sm font-black uppercase">
-                            <span>${ex.n}</span>
-                            <div class="text-[10px] text-sky-400">
-                                <span>${ex.s}x${ex.r}</span>
-                            </div>
-                        </div>
-                        <div class="exercise-detail">
-                            <img src="${ex.img}" class="w-full h-32 object-cover rounded-xl mb-3">
-                            <p class="text-[11px] text-slate-300 leading-relaxed"><span class="text-sky-500 font-bold italic">TÉCNICA:</span> ${ex.d}</p>
-                            <p class="text-[11px] text-orange-400 mt-2 font-bold uppercase">Descanso: ${ex.t}</p>
-                        </div>
-                    </div>
-                `;
-            });
-
-            const btn = document.getElementById('btn-finalizar');
-            const esHoy = i === new Date().getDay();
-            const doneHoy = p.completados.includes(getFechaStr(i));
-
-            if(doneHoy) {
-                btn.innerText = "MISIÓN CUMPLIDA";
-                btn.classList.add('btn-completed');
-                btn.disabled = true;
-            } else if (!esHoy) {
-                btn.innerText = "NO ES TU DÍA ACTUAL";
-                btn.classList.remove('btn-completed');
-                btn.disabled = true;
-                btn.style.opacity = "0.5";
-            } else {
-                btn.innerText = "MARCAR DÍA COMO COMPLETADO";
-                btn.classList.remove('btn-completed');
-                btn.disabled = false;
-                btn.style.opacity = "1";
-            }
-        }
-
-        function completarMision() {
-            const p = JSON.parse(localStorage.getItem('holofit_v2'));
-            const hoyStr = getFechaStr(new Date().getDay());
-            
-            if(!p.completados.includes(hoyStr)) {
-                p.completados.push(hoyStr);
-                localStorage.setItem('holofit_v2', JSON.stringify(p));
-                const frase = FRASES[Math.floor(Math.random() * FRASES.length)];
-                alert(frase);
-                render(p);
-            }
-        }
-
-        function getFechaStr(index) {
-            const d = new Date();
-            const diff = d.getDate() - d.getDay() + index;
-            return new Date(d.setDate(diff)).toISOString().split('T')[0];
-        }
-    </script>
+  </header>
+ 
+  <div style="margin-bottom:20px">
+    <p style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;font-style:italic">Selecciona el día:</p>
+    <div id="semana-nav" style="display:flex;gap:6px"></div>
+  </div>
+ 
+  <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px">
+    <div style="position:relative;width:96px;height:96px;margin-bottom:10px;display:flex;align-items:center;justify-content:center">
+      <div class="avatar-ring" style="position:absolute;inset:0;border-radius:50%;border:2px solid rgba(56,189,248,.3)"></div>
+      <span id="avatar-emoji" style="font-size:52px;line-height:1"></span>
+    </div>
+    <h2 id="view-day-name" style="font-size:18px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.02em"></h2>
+    <p id="lugar-tag" style="font-size:9px;color:#38bdf8;font-weight:700;text-transform:uppercase;margin-top:2px"></p>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;justify-content:center" id="stats-row"></div>
+  </div>
+ 
+  <div style="margin-bottom:20px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <p style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase">Progreso del día</p>
+      <p id="progress-label" style="font-size:11px;color:#38bdf8;font-weight:700">0 / 0</p>
+    </div>
+    <div class="progress-track"><div id="progress-fill" class="progress-fill" style="width:0%"></div></div>
+  </div>
+ 
+  <div id="ejercicios-list" style="display:flex;flex-direction:column;gap:14px;margin-bottom:24px"></div>
+ 
+  <button id="btn-finalizar" onclick="completarMision()" class="btn-primary" style="width:100%;padding:18px;border-radius:18px;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;box-shadow:0 8px 32px rgba(14,165,233,.25)">
+    MARCAR DÍA COMO COMPLETADO
+  </button>
+</div>
+ 
+<!-- MODAL INICIAL -->
+<div id="modal-encuesta">
+  <div class="holo-card" style="padding:36px;border-radius:32px;width:100%;max-width:420px;border:2px solid rgba(56,189,248,.25)">
+    <h2 style="font-size:28px;font-weight:900;color:#38bdf8;font-style:italic;margin-bottom:6px">NUEVO GUERRERO</h2>
+    <p style="font-size:12px;color:#64748b;margin-bottom:28px;font-weight:500">Completa tu perfil para generar tu rutina personalizada</p>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <input type="text" id="in-nombre" placeholder="TU NOMBRE" />
+      <div>
+        <p style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Objetivo principal</p>
+        <select id="in-objetivo">
+          <option value="Musculo">💪 Ganar Músculo</option>
+          <option value="Grasa">🔥 Perder Grasa</option>
+          <option value="Resistencia">⚡ Resistencia</option>
+        </select>
+      </div>
+      <div>
+        <p style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Lugar de entrenamiento</p>
+        <select id="in-lugar">
+          <option value="casa">🏠 En Casa</option>
+          <option value="gym">🏋️ En Gimnasio</option>
+        </select>
+      </div>
+    </div>
+    <button onclick="configurar()" class="btn-primary" style="width:100%;padding:16px;border-radius:14px;font-size:15px;font-weight:900;text-transform:uppercase;margin-top:28px">INICIAR SISTEMA →</button>
+  </div>
+</div>
+ 
+<!-- TIMER OVERLAY -->
+<div id="timer-overlay">
+  <p style="font-size:12px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:24px">Descanso activo</p>
+  <div class="timer-circle">
+    <svg class="timer-svg" width="200" height="200" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="88" fill="none" stroke="#1e293b" stroke-width="10"/>
+      <circle id="timer-progress" cx="100" cy="100" r="88" fill="none" stroke="#38bdf8" stroke-width="10" stroke-dasharray="553" stroke-dashoffset="0"/>
+    </svg>
+    <div id="timer-number">--</div>
+  </div>
+  <p id="timer-ex-name" style="margin-top:20px;font-size:14px;color:#94a3b8;font-weight:700;text-transform:uppercase"></p>
+  <button onclick="cancelarTimer()" style="margin-top:28px;background:transparent;border:1px solid #334155;color:#64748b;padding:10px 24px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700">Saltar descanso</button>
+</div>
+ 
+<!-- MODAL CELEBRACIÓN -->
+<div id="modal-celebracion">
+  <div class="confetti-wrap" id="confetti-wrap"></div>
+  <div class="holo-card" style="padding:40px;border-radius:32px;max-width:380px;width:100%;text-align:center;border:2px solid rgba(99,102,241,.4);position:relative;z-index:1">
+    <div style="font-size:64px;margin-bottom:12px" id="cel-avatar"></div>
+    <h2 style="font-size:26px;font-weight:900;color:#38bdf8;font-style:italic;margin-bottom:8px">¡MISIÓN CUMPLIDA!</h2>
+    <p id="cel-frase" style="font-size:14px;color:#94a3b8;line-height:1.6;margin-bottom:20px"></p>
+    <div style="background:#0f172a;border-radius:14px;padding:16px;margin-bottom:24px">
+      <p style="font-size:10px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:4px">Racha actual</p>
+      <p id="cel-racha" style="font-size:40px;font-weight:900;color:#ef4444;font-style:italic">0 🔥</p>
+    </div>
+    <div id="cel-edu" style="background:rgba(56,189,248,.07);border-radius:12px;padding:14px;margin-bottom:24px;text-align:left;font-size:12px;color:#94a3b8;line-height:1.6"></div>
+    <button onclick="cerrarCelebracion()" class="btn-primary" style="width:100%;padding:14px;border-radius:14px;font-size:15px;font-weight:900;text-transform:uppercase">CONTINUAR →</button>
+  </div>
+</div>
+ 
+<script>
+const FRASES=[
+  "¡Nivel Alpha alcanzado! El tigre ruge hoy.",
+  "Dolor es debilidad saliendo del cuerpo. ¡Bien hecho!",
+  "Un día más cerca de tu mejor versión.",
+  "¡Bestial! Los límites son mentales.",
+  "Misión cumplida. Tu disciplina es tu superpoder."
+];
+ 
+const EDU_TIPS=[
+  "💡 El músculo crece durante el DESCANSO, no durante el entrenamiento. Duerme 7-9 horas para maximizar tus ganancias.",
+  "🧠 La mente-músculo es real: concentrarte en el músculo trabajado puede aumentar su activación hasta un 22%.",
+  "⚡ La proteína post-entrenamiento dentro de los primeros 30-60 min acelera la síntesis muscular.",
+  "🔥 El cardio de alta intensidad (HIIT) quema grasa 48h después del ejercicio.",
+  "💧 Una deshidratación del 2% reduce tu rendimiento físico hasta un 20%. ¡Hidratate!"
+];
+ 
+const MUSCULOS={
+  "Empuje Alpha":"Pecho · Hombros · Tríceps",
+  "Sentadilla Poder":"Cuádriceps · Glúteos · Isquiotibiales",
+  "Tirón Vertical":"Dorsales · Bíceps · Romboides",
+  "Zancada Explosiva":"Glúteos · Cuádriceps · Core",
+  "Curl de Poder":"Bíceps braquial · Braquiorradial",
+  "Puente de Hierro":"Glúteos · Isquiotibiales · Core",
+  "Burpees Infierno":"Cuerpo completo · Sistema Cardio",
+  "Escaladores":"Core · Hombros · Caderas",
+  "Jumping Jacks":"Cardio · Hombros · Aductores",
+  "Senta-Salto":"Cuádriceps · Glúteos · Potencia",
+  "Plancha Dinámica":"Core · Hombros · Estabilizadores",
+  "Sprint Estático":"Cadera · Cardio · Coordinación",
+  "Plancha Abdominal":"Recto abdominal · Transverso · Lumbar",
+  "Zancada con Salto":"Glúteos · Cuádriceps · Potencia",
+  "Flexión Diamante":"Tríceps · Pecho interno · Hombros",
+  "Paso de Oso":"Core completo · Hombros · Coordinación",
+  "Fondos":"Tríceps · Pecho · Hombros anteriores",
+  "Sentadilla Isométrica":"Cuádriceps · Estabilidad · Resistencia"
+};
+ 
+const RUTINAS_BASE={
+  Musculo:{avatar:"🦁",meta:"Hipertrofia",intensidad:"Alta",tipo:"Fuerza",ejercicios:[
+    {n:"Empuje Alpha",d:"Baja lento en 3s, explota hacia arriba. Mantén el pecho alto.",s:4,r:"12",t:60,img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400"},
+    {n:"Sentadilla Poder",d:"Espalda recta, rompe el paralelo. Siente el peso en los talones.",s:4,r:"10",t:90,img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400"},
+    {n:"Tirón Vertical",d:"Contracción máxima de dorsales. No uses el balanceo del torso.",s:3,r:"12",t:60,img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=400"},
+    {n:"Zancada Explosiva",d:"Paso largo y firme. Controla el equilibrio del núcleo.",s:4,r:"12/lado",t:45,img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400"},
+    {n:"Curl de Poder",d:"Bíceps bajo tensión constante. No bajes del todo en la fase negativa.",s:3,r:"15",t:45,img:"https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400"},
+    {n:"Puente de Hierro",d:"Eleva la pelvis. Aprieta glúteos 2 segundos en la cima.",s:4,r:"20",t:60,img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=400"}
+  ]},
+  Grasa:{avatar:"🔥",meta:"Quema grasa",intensidad:"Muy Alta",tipo:"HIIT",ejercicios:[
+    {n:"Burpees Infierno",d:"Pecho al suelo y salto máximo. Cardio explosivo puro.",s:4,r:"15",t:30,img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=400"},
+    {n:"Escaladores",d:"Rodillas al pecho lo más rápido posible. Core firme en todo momento.",s:4,r:"45s",t:30,img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=400"},
+    {n:"Jumping Jacks",d:"Movimiento constante. Mantén el ritmo cardíaco en zona de quema.",s:4,r:"60s",t:20,img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=400"},
+    {n:"Senta-Salto",d:"Baja en sentadilla y salta lo más alto posible. Aterriza suave.",s:4,r:"15",t:30,img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400"},
+    {n:"Plancha Dinámica",d:"Pasa de antebrazos a manos sin mover la cadera. Controlado.",s:3,r:"12",t:30,img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=400"},
+    {n:"Sprint Estático",d:"Corre en el sitio levantando rodillas al máximo. ¡Sin parar!",s:4,r:"45s",t:30,img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=400"}
+  ]},
+  Resistencia:{avatar:"⚡",meta:"Resistencia",intensidad:"Media-Alta",tipo:"Funcional",ejercicios:[
+    {n:"Plancha Abdominal",d:"Cuerpo recto como tabla. Aprieta todo: abdomen, glúteos, espalda.",s:4,r:"60s",t:30,img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=400"},
+    {n:"Zancada con Salto",d:"Cambia de pierna en el aire. Controla el aterrizaje con suavidad.",s:4,r:"12",t:45,img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400"},
+    {n:"Flexión Diamante",d:"Manos juntas formando un diamante. Codos pegados al cuerpo.",s:4,r:"10",t:60,img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400"},
+    {n:"Paso de Oso",d:"Camina a cuatro patas sin tocar las rodillas al suelo. Lento.",s:3,r:"10m",t:30,img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=400"},
+    {n:"Fondos",d:"Usa silla o banco. Baja hasta 90 grados. Codos atrás, no afuera.",s:4,r:"15",t:45,img:"https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400"},
+    {n:"Sentadilla Isométrica",d:"Apóyate en pared a 90 grados y aguanta. Respira profundo.",s:3,r:"45s",t:30,img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400"}
+  ]}
+};
+ 
+const DIAS=["DOM","LUN","MAR","MIE","JUE","VIE","SAB"];
+let diaSeleccionado=new Date().getDay();
+let exCompletos=new Set();
+let timerInterval=null;
+ 
+document.addEventListener('DOMContentLoaded',()=>{
+  const p=JSON.parse(localStorage.getItem('holofit_v3'));
+  if(!p) document.getElementById('modal-encuesta').style.display='flex';
+  else{document.getElementById('modal-encuesta').style.display='none';render(p);}
+});
+ 
+function configurar(){
+  const nombre=document.getElementById('in-nombre').value.trim();
+  if(!nombre)return alert("Guerrero, dime tu nombre.");
+  const p={
+    nombre,
+    objetivo:document.getElementById('in-objetivo').value,
+    lugar:document.getElementById('in-lugar').value,
+    completados:[]
+  };
+  localStorage.setItem('holofit_v3',JSON.stringify(p));
+  document.getElementById('modal-encuesta').style.display='none';
+  render(p);
+}
+ 
+function render(p){
+  document.getElementById('main-dashboard').classList.remove('hidden');
+  document.getElementById('display-nombre').innerText='Guerrero '+p.nombre;
+  document.getElementById('racha-val').innerText=p.completados.length;
+  const r=RUTINAS_BASE[p.objetivo];
+  document.getElementById('avatar-emoji').innerText=r.avatar;
+  document.getElementById('lugar-tag').innerText='📍 '+(p.lugar==='gym'?'Gimnasio':'Casa');
+  const sr=document.getElementById('stats-row');
+  sr.innerHTML=
+    '<div class="stat-pill"><span>'+r.intensidad+'</span>Intensidad</div>'+
+    '<div class="stat-pill"><span>'+r.tipo+'</span>Tipo</div>'+
+    '<div class="stat-pill"><span>'+r.ejercicios.length+'</span>Ejercicios</div>';
+  renderNav(p);
+  showDay(diaSeleccionado);
+}
+ 
+function renderNav(p){
+  const nav=document.getElementById('semana-nav');
+  nav.innerHTML='';
+  DIAS.forEach(function(dia,i){
+    const done=p.completados.includes(getFechaStr(i));
+    const active=i===diaSeleccionado;
+    const btn=document.createElement('div');
+    btn.className='day-btn'+(done?' day-done':(active?' day-active':''));
+    btn.onclick=function(){selectDay(i);};
+    btn.innerHTML=dia+'<span style="font-size:14px">'+(done?'✓':(active?'●':'○'))+'</span>';
+    nav.appendChild(btn);
+  });
+}
+ 
+function selectDay(i){
+  diaSeleccionado=i;
+  exCompletos=new Set();
+  const p=JSON.parse(localStorage.getItem('holofit_v3'));
+  renderNav(p);
+  showDay(i);
+}
+ 
+function showDay(i){
+  const p=JSON.parse(localStorage.getItem('holofit_v3'));
+  const ejercicios=RUTINAS_BASE[p.objetivo].ejercicios;
+  document.getElementById('view-day-name').innerText='Rutina '+DIAS[i];
+  const list=document.getElementById('ejercicios-list');
+  list.innerHTML='';
+  ejercicios.forEach(function(ex,idx){
+    const sets=Array.from({length:ex.s},function(_,si){
+      return '<div class="set-dot'+(exCompletos.has(idx+'-'+si)?' done':'')+'" onclick="toggleSet('+idx+','+si+',this)" title="Serie '+(si+1)+'"></div>';
+    }).join('');
+    const musculo=MUSCULOS[ex.n]||'Múltiples grupos musculares';
+    const card=document.createElement('div');
+    card.className='exercise-card holo-card';
+    card.style.cssText='padding:18px;border-radius:18px;border-left:3px solid #0ea5e9';
+    card.id='excard-'+idx;
+    card.innerHTML=
+      '<div style="display:flex;justify-content:space-between;align-items:center">'+
+        '<div style="display:flex;align-items:center;gap:10px;flex:1" onclick="toggleCard('+idx+')">'+
+          '<button class="check-btn'+(exCompletos.has('done-'+idx)?' done':'')+'" id="check-'+idx+'" onclick="event.stopPropagation();toggleExDone('+idx+')" title="Marcar completado">'+
+            '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
+          '</button>'+
+          '<div>'+
+            '<p style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.03em">'+ex.n+'</p>'+
+            '<p style="font-size:10px;color:#64748b;margin-top:1px">'+musculo+'</p>'+
+          '</div>'+
+        '</div>'+
+        '<div style="display:flex;align-items:center;gap:10px" onclick="toggleCard('+idx+')">'+
+          '<div style="text-align:right">'+
+            '<p style="font-size:13px;font-weight:900;color:#38bdf8">'+ex.s+'×'+ex.r+'</p>'+
+            '<p style="font-size:9px;color:#64748b;text-transform:uppercase">series×reps</p>'+
+          '</div>'+
+          '<span style="color:#475569;font-size:14px">▾</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="exercise-detail">'+
+        '<img src="'+ex.img+'&q=80" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:12px" onerror="this.style.display=\'none\'" loading="lazy">'+
+        '<div class="edu-tip" style="margin-bottom:12px"><strong>TÉCNICA:</strong> '+ex.d+'</div>'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
+          '<p style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase">Progreso de series</p>'+
+          '<button onclick="iniciarTimer('+ex.t+',\''+ex.n+'\')" style="background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.3);color:#38bdf8;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer">⏱ Descanso '+ex.t+'s</button>'+
+        '</div>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap">'+sets+'</div>'+
+      '</div>';
+    list.appendChild(card);
+  });
+  updateProgress(ejercicios.length);
+  const btn=document.getElementById('btn-finalizar');
+  const esHoy=i===new Date().getDay();
+  const doneHoy=p.completados.includes(getFechaStr(i));
+  if(doneHoy){
+    btn.innerText='✓ MISIÓN CUMPLIDA';
+    btn.classList.add('btn-completed');
+    btn.disabled=true;
+  } else if(!esHoy){
+    btn.innerText='NO ES TU DÍA ACTUAL';
+    btn.classList.remove('btn-completed');
+    btn.disabled=true;
+    btn.style.opacity='.4';
+  } else{
+    btn.innerText='MARCAR DÍA COMO COMPLETADO';
+    btn.classList.remove('btn-completed');
+    btn.disabled=false;
+    btn.style.opacity='1';
+  }
+}
+ 
+function toggleCard(idx){
+  document.getElementById('excard-'+idx).classList.toggle('active');
+}
+ 
+function toggleSet(exIdx,setIdx,el){
+  const key=exIdx+'-'+setIdx;
+  if(exCompletos.has(key)){exCompletos.delete(key);el.classList.remove('done');}
+  else{exCompletos.add(key);el.classList.add('done');}
+}
+ 
+function toggleExDone(idx){
+  const key='done-'+idx;
+  const btn=document.getElementById('check-'+idx);
+  const p=JSON.parse(localStorage.getItem('holofit_v3'));
+  const total=RUTINAS_BASE[p.objetivo].ejercicios.length;
+  if(exCompletos.has(key)){exCompletos.delete(key);btn.classList.remove('done');}
+  else{exCompletos.add(key);btn.classList.add('done');}
+  updateProgress(total);
+}
+ 
+function updateProgress(total){
+  const done=[...exCompletos].filter(function(k){return k.startsWith('done-');}).length;
+  const pct=total>0?Math.round(done/total*100):0;
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('progress-label').innerText=done+' / '+total;
+}
+ 
+function iniciarTimer(segundos,nombre){
+  const overlay=document.getElementById('timer-overlay');
+  const numEl=document.getElementById('timer-number');
+  const progEl=document.getElementById('timer-progress');
+  const nameEl=document.getElementById('timer-ex-name');
+  const circumference=553;
+  overlay.classList.add('show');
+  nameEl.innerText='Después de: '+nombre;
+  let remaining=segundos;
+  numEl.innerText=remaining;
+  progEl.style.strokeDashoffset='0';
+  if(timerInterval)clearInterval(timerInterval);
+  timerInterval=setInterval(function(){
+    remaining--;
+    numEl.innerText=remaining;
+    const offset=circumference*(1-remaining/segundos);
+    progEl.style.strokeDashoffset=offset;
+    if(remaining<=0){clearInterval(timerInterval);timerInterval=null;overlay.classList.remove('show');}
+  },1000);
+}
+ 
+function cancelarTimer(){
+  if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
+  document.getElementById('timer-overlay').classList.remove('show');
+}
+ 
+function completarMision(){
+  const p=JSON.parse(localStorage.getItem('holofit_v3'));
+  const hoyStr=getFechaStr(new Date().getDay());
+  if(!p.completados.includes(hoyStr)){
+    p.completados.push(hoyStr);
+    localStorage.setItem('holofit_v3',JSON.stringify(p));
+    mostrarCelebracion(p);
+  }
+}
+ 
+function mostrarCelebracion(p){
+  const r=RUTINAS_BASE[p.objetivo];
+  document.getElementById('cel-avatar').innerText=r.avatar;
+  document.getElementById('cel-frase').innerText=FRASES[Math.floor(Math.random()*FRASES.length)];
+  document.getElementById('cel-racha').innerText=p.completados.length+' 🔥';
+  document.getElementById('cel-edu').innerHTML='<strong style="color:#38bdf8">¿Sabías que?</strong><br>'+EDU_TIPS[Math.floor(Math.random()*EDU_TIPS.length)];
+  generarConfetti();
+  document.getElementById('modal-celebracion').classList.add('show');
+}
+ 
+function generarConfetti(){
+  const wrap=document.getElementById('confetti-wrap');
+  wrap.innerHTML='';
+  const colors=['#0ea5e9','#6366f1','#f59e0b','#22c55e','#ef4444','#ec4899'];
+  for(let i=0;i<60;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.cssText='left:'+Math.random()*100+'%;background:'+colors[Math.floor(Math.random()*colors.length)]+';width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px;animation-duration:'+(2+Math.random()*2)+'s;animation-delay:'+Math.random()+'s;border-radius:'+(Math.random()>0.5?'50%':'2px');
+    wrap.appendChild(el);
+  }
+}
+ 
+function cerrarCelebracion(){
+  document.getElementById('modal-celebracion').classList.remove('show');
+  const p=JSON.parse(localStorage.getItem('holofit_v3'));
+  render(p);
+}
+ 
+function getFechaStr(index){
+  const d=new Date();
+  const diff=d.getDate()-d.getDay()+index;
+  return new Date(new Date().setDate(diff)).toISOString().split('T')[0];
+}
+</script>
 </body>
 </html>
