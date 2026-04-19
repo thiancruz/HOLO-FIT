@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOLO-FIT | Dashboard Offline</title>
+    <title>HOLO-FIT | Entrenamiento Alpha</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -11,162 +11,228 @@
         .holo-card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(56, 189, 248, 0.3); backdrop-filter: blur(10px); }
         .tiger-glow { filter: drop-shadow(0 0 15px #38bdf8); }
         .btn-primary { background: linear-gradient(90deg, #38bdf8, #818cf8); transition: all 0.3s ease; }
-        .btn-primary:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
+        .btn-orange { background: linear-gradient(90deg, #f97316, #fbbf24); }
+        .day-pill { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .hidden { display: none !important; }
     </style>
 </head>
-<body class="p-4 md:p-8 max-w-2xl mx-auto">
+<body class="p-4 md:p-8 max-w-2xl mx-auto pb-24">
 
-    <header class="flex justify-between items-start mb-10">
-        <div>
-            <h1 class="text-2xl font-black tracking-tighter text-sky-400">HOLO-FIT</h1>
-            <p id="display-nombre" class="text-slate-400 text-sm font-medium italic">Bienvenido, Guerrero</p>
-            <button onclick="abrirModal()" class="text-[10px] text-sky-500 underline uppercase font-bold tracking-widest mt-1">Editar Perfil</button>
-        </div>
-        <div class="text-right">
-            <div class="flex items-center justify-end text-orange-400 font-black italic text-xl">
-                <i data-lucide="flame" class="mr-1 w-5 h-5"></i> <span id="racha-val">0</span>
-            </div>
-            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Racha de Días</p>
-        </div>
-    </header>
-
-    <div class="flex flex-col items-center mb-12">
-        <div class="relative w-56 h-56 mb-6 flex items-center justify-center">
-            <div class="absolute inset-0 bg-sky-500/20 rounded-full animate-ping opacity-20"></div>
-            <div class="absolute inset-0 bg-sky-500/10 rounded-full animate-pulse"></div>
-            <span id="tiger-emoji" class="text-9xl tiger-glow animate-bounce inline-block">🐯</span>
-        </div>
-        <div class="text-center">
-            <h2 id="tiger-status" class="text-2xl font-bold tracking-tight mb-1 italic uppercase text-white">Tigre en Espera</h2>
-            <p id="frase-motivadora" class="text-slate-400 text-sm max-w-[250px] mx-auto leading-relaxed">
-                Tu compañero digital espera tu primer movimiento.
-            </p>
-        </div>
-    </div>
-
-    <div class="holo-card rounded-[2rem] p-7 mb-6 border-sky-400/20 shadow-2xl shadow-sky-900/20">
-        <div class="flex justify-between items-center mb-6">
+    <div id="main-dashboard">
+        <header class="flex justify-between items-start mb-8">
             <div>
-                <span class="bg-sky-500/20 text-sky-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Objetivo Diario</span>
-                <h3 class="text-2xl font-black mt-2 tracking-tight">Full Body Alpha</h3>
-                <p class="text-slate-400 text-sm">25 min • Sin equipo</p>
+                <h1 class="text-2xl font-black tracking-tighter text-sky-400 uppercase">Holo-Fit</h1>
+                <p id="display-nombre" class="text-slate-400 text-sm font-medium italic">Guerrero</p>
+                <button onclick="abrirModal()" class="text-[10px] text-sky-500 underline uppercase font-bold tracking-widest mt-1">Configuración</button>
             </div>
-            <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                <i data-lucide="zap" class="text-sky-400 fill-current w-6 h-6"></i>
+            <div class="text-right">
+                <div class="flex items-center justify-end text-orange-400 font-black italic text-xl">
+                    <i data-lucide="zap" class="mr-1 w-5 h-5"></i> <span id="racha-val">0</span>
+                </div>
+                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest text-right">Sesiones Totales</p>
+            </div>
+        </header>
+
+        <div class="mb-8">
+            <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4 italic">Cronograma de Misión</h3>
+            <div class="flex justify-between gap-1" id="semana-container">
+                </div>
+        </div>
+
+        <div class="flex flex-col items-center mb-10">
+            <div class="relative w-40 h-40 mb-4 flex items-center justify-center">
+                <div class="absolute inset-0 bg-sky-500/10 rounded-full animate-pulse"></div>
+                <span id="tiger-emoji" class="text-7xl tiger-glow animate-bounce">🐯</span>
+            </div>
+            <div class="text-center">
+                <h2 id="titulo-rutina" class="text-xl font-black tracking-tight uppercase italic text-sky-400">Cargando Plan...</h2>
+                <p id="objetivo-tag" class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">---</p>
             </div>
         </div>
-        <button onclick="registrarEntrenamiento()" class="btn-primary w-full py-5 rounded-2xl font-black text-lg shadow-lg shadow-sky-500/20 uppercase tracking-tighter">
-            Finalizar Sesión +200 XP
+
+        <div id="ejercicios-container" class="space-y-3 mb-8">
+            </div>
+
+        <button id="btn-completar" onclick="registrarEntrenamiento()" class="btn-primary w-full py-5 rounded-2xl font-black text-lg shadow-lg uppercase tracking-tighter transition-all">
+            Marcar Día como Completado
         </button>
     </div>
 
-    <div class="grid grid-cols-2 gap-4">
-        <div class="holo-card rounded-3xl p-5 flex flex-col items-center border-yellow-500/20">
-            <i data-lucide="flame" class="text-yellow-400 mb-2 w-6 h-6"></i>
-            <p class="text-3xl font-black italic" id="calorias-val">0</p>
-            <p class="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Kcal Totales</p>
-        </div>
-        <div class="holo-card rounded-3xl p-5 flex flex-col items-center border-purple-500/20">
-            <i data-lucide="target" class="text-purple-400 mb-2 w-6 h-6"></i>
-            <p class="text-xl font-black italic text-center leading-none" id="objetivo-val">SIN META</p>
-            <p class="text-slate-500 text-[10px] uppercase font-bold tracking-widest mt-1">Objetivo</p>
-        </div>
-    </div>
-
-    <button onclick="reiniciarTodo()" class="w-full mt-10 text-[9px] text-slate-600 uppercase tracking-[0.2em] hover:text-red-500 transition-colors">
-        Reiniciar Memoria del Sistema
-    </button>
-
-    <div id="modal-editar" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 z-[120]">
-        <div class="holo-card p-8 rounded-[2.5rem] w-full max-w-sm border-2 border-sky-500/30 shadow-2xl">
-            <h2 class="text-2xl font-black mb-6 text-sky-400 italic uppercase">Reprogramar Perfil</h2>
+    <div id="modal-editar" class="fixed inset-0 bg-slate-950 z-[200] flex items-center justify-center p-4 backdrop-blur-xl">
+        <div class="holo-card p-8 rounded-[2.5rem] w-full max-w-sm border-2 border-sky-500/30">
+            <h2 class="text-3xl font-black mb-2 text-white italic uppercase tracking-tighter">Bienvenido</h2>
+            <p class="text-slate-400 text-xs mb-8 uppercase tracking-widest font-bold">Configura tu perfil alpha</p>
             
-            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Nombre Clave</label>
-            <input type="text" id="input-nombre" placeholder="Ej. Alex" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 mb-5 text-white outline-none focus:border-sky-500 transition-all">
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 italic">Nombre de Guerrero</label>
+            <input type="text" id="input-nombre" placeholder="TU NOMBRE" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 mb-6 text-white outline-none focus:border-sky-500 font-bold">
             
-            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Objetivo de Misión</label>
-            <select id="input-objetivo" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 mb-8 text-white outline-none focus:border-sky-500">
-                <option value="Perder Grasa">Quemar Grasa</option>
-                <option value="Ganar Músculo">Músculo Alpha</option>
-                <option value="Resistencia">Resistencia</option>
-            </select>
-
-            <div class="flex gap-3">
-                <button onclick="cerrarModal()" class="flex-1 py-4 rounded-xl bg-slate-800 font-bold text-xs uppercase tracking-widest border border-slate-700">Cerrar</button>
-                <button onclick="guardarCambios()" class="flex-1 py-4 rounded-xl btn-primary font-bold text-xs uppercase tracking-widest text-slate-900">Guardar</button>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 italic">Objetivo de Misión</label>
+            <div class="grid grid-cols-1 gap-3 mb-10">
+                <button onclick="selectObj('Grasa', this)" class="obj-btn p-4 rounded-xl border border-slate-700 bg-slate-800 text-left text-sm font-bold hover:border-sky-500 transition-all">🔥 Quema de Grasa</button>
+                <button onclick="selectObj('Musculo', this)" class="obj-btn p-4 rounded-xl border border-slate-700 bg-slate-800 text-left text-sm font-bold hover:border-sky-500 transition-all">💪 Ganar Músculo</button>
+                <button onclick="selectObj('Resistencia', this)" class="obj-btn p-4 rounded-xl border border-slate-700 bg-slate-800 text-left text-sm font-bold hover:border-sky-500 transition-all">⚡ Resistencia</button>
             </div>
+
+            <button onclick="guardarCambios()" class="btn-primary w-full py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] text-slate-900">Iniciar Sistema</button>
         </div>
     </div>
 
     <script>
-        // --- LÓGICA DE PERSISTENCIA LOCAL (NO SUPABASE) ---
+        // --- BASE DE DATOS DE ENTRENAMIENTOS ---
+        const PLANES = {
+            Grasa: {
+                nombre: "Protocolo Incinerador",
+                ejercicios: [
+                    { n: "Burpees", d: "Salto explosivo con flexión", s: "4", r: "12", t: "30s" },
+                    { n: "Escaladores", d: "Rodillas al pecho rápido", s: "4", r: "40s", t: "30s" },
+                    { n: "Jumping Jacks", d: "Salto abriendo brazos/piernas", s: "3", r: "50s", t: "20s" },
+                    { n: "Sentadilla Salto", d: "Sentadilla con despegue", s: "4", r: "15", t: "45s" },
+                    { n: "Plancha dinámica", d: "Subir y bajar antebrazos", s: "3", r: "45s", t: "30s" },
+                    { n: "Zancadas", d: "Paso largo alternado", s: "4", r: "20", t: "30s" }
+                ]
+            },
+            Musculo: {
+                nombre: "Hipertrofia Alpha",
+                ejercicios: [
+                    { n: "Flexiones Diamante", d: "Manos juntas en forma de diamante", s: "4", r: "12", t: "60s" },
+                    { n: "Sentadilla Búlgara", d: "Pie atrás en silla/banco", s: "4", r: "10/lado", t: "60s" },
+                    { n: "Flexiones de Arquero", d: "Bajar alternando peso a un brazo", s: "3", r: "8", t: "90s" },
+                    { n: "Puente de Glúteo", d: "Elevación de pelvis (añadir peso)", s: "4", r: "15", t: "60s" },
+                    { n: "Fondos en Silla", d: "Extensión de tríceps", s: "4", r: "12", t: "60s" },
+                    { n: "Dominadas / Remo", d: "Tirón vertical o bajo mesa", s: "4", r: "10", t: "90s" }
+                ]
+            },
+            Resistencia: {
+                nombre: "Resistencia Core-X",
+                ejercicios: [
+                    { n: "Plancha Abdominal", d: "Cuerpo recto, antebrazos", s: "4", r: "60s", t: "30s" },
+                    { n: "V-Ups", d: "Tocar puntas pies sentado", s: "4", r: "15", t: "30s" },
+                    { n: "Superman", d: "Elevación lumbar y piernas", s: "3", r: "20", t: "20s" },
+                    { n: "Bicycle Crunches", d: "Codo a rodilla contraria", s: "4", r: "40s", t: "20s" },
+                    { n: "Dead Bug", d: "Extensión brazo/pierna opuesta", s: "3", r: "12", t: "30s" },
+                    { n: "Side Plank", d: "Plancha lateral", s: "3", r: "45s/lado", t: "30s" }
+                ]
+            }
+        };
 
-        // Cargar datos al abrir la página
+        const DIAS = ["DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB"];
+        let objetivoSeleccionado = '';
+
+        // --- LÓGICA CORE ---
         document.addEventListener('DOMContentLoaded', () => {
-            const datosGuardados = JSON.parse(localStorage.getItem('holofit_user')) || {
-                nombre: '',
-                racha: 0,
-                calorias: 0,
-                objetivo: 'SIN META'
-            };
-            actualizarUI(datosGuardados);
-            lucide.createIcons();
+            const data = JSON.parse(localStorage.getItem('holofit_pro'));
+            if (!data) {
+                abrirModal();
+            } else {
+                cerrarModal();
+                renderAll(data);
+            }
         });
 
-        function actualizarUI(datos) {
-            document.getElementById('display-nombre').innerText = `Bienvenido, ${datos.nombre || 'Guerrero'}`;
-            document.getElementById('racha-val').innerText = datos.racha;
-            document.getElementById('calorias-val').innerText = datos.calorias;
-            document.getElementById('objetivo-val').innerText = datos.objetivo.toUpperCase();
-            document.getElementById('tiger-status').innerText = `TIGRE DE ${datos.nombre || 'ALPHA'}`;
-            
-            // Evolución visual del tigre
-            const emoji = document.getElementById('tiger-emoji');
-            const frase = document.getElementById('frase-motivadora');
-            
-            if (datos.racha >= 1) {
-                emoji.innerText = "🐅";
-                frase.innerText = "Tu racha ha despertado al tigre. ¡Sigue así!";
-            }
-            if (datos.racha >= 5) {
-                emoji.innerText = "🐆";
-                emoji.style.filter = "drop-shadow(0 0 25px #fbbf24)";
-                frase.innerText = "¡MODO ALPHA! Tu tigre es una bestia imparable.";
-            }
-        }
-
-        function registrarEntrenamiento() {
-            let datos = JSON.parse(localStorage.getItem('holofit_user')) || { nombre: '', racha: 0, calorias: 0, objetivo: 'SIN META' };
-            
-            datos.racha += 1;
-            datos.calorias += 200;
-            
-            localStorage.setItem('holofit_user', JSON.stringify(datos));
-            actualizarUI(datos);
-            alert("¡ENTRENAMIENTO COMPLETADO! +200 XP 🐯🔥");
+        function selectObj(val, btn) {
+            objetivoSeleccionado = val;
+            document.querySelectorAll('.obj-btn').forEach(b => b.classList.remove('border-sky-500', 'bg-sky-500/10'));
+            btn.classList.add('border-sky-500', 'bg-sky-500/10');
         }
 
         function guardarCambios() {
             const nombre = document.getElementById('input-nombre').value;
-            const objetivo = document.getElementById('input-objetivo').value;
+            if (!nombre || !objetivoSeleccionado) return alert("Completa todos los datos, Guerrero.");
 
-            if (!nombre) return alert("Ingresa un nombre clave");
+            const nuevoPerfil = {
+                nombre: nombre,
+                objetivo: objetivoSeleccionado,
+                racha: 0,
+                completados: [] // Guardará fechas tipo "2023-10-27"
+            };
 
-            let datos = JSON.parse(localStorage.getItem('holofit_user')) || { racha: 0, calorias: 0 };
-            datos.nombre = nombre;
-            datos.objetivo = objetivo;
-
-            localStorage.setItem('holofit_user', JSON.stringify(datos));
-            actualizarUI(datos);
+            localStorage.setItem('holofit_pro', JSON.stringify(nuevoPerfil));
             cerrarModal();
+            renderAll(nuevoPerfil);
         }
 
-        function reiniciarTodo() {
-            if(confirm("¿Estás seguro de que quieres borrar tu progreso? Tu tigre volverá a dormir.")) {
-                localStorage.removeItem('holofit_user');
-                location.reload();
+        function renderAll(data) {
+            document.getElementById('display-nombre').innerText = `Guerrero ${data.nombre}`;
+            document.getElementById('racha-val').innerText = data.completados.length;
+            document.getElementById('objetivo-tag').innerText = `PLAN: ${data.objetivo}`;
+            
+            const planActual = PLANES[data.objetivo];
+            document.getElementById('titulo-rutina').innerText = planActual.nombre;
+
+            renderCalendario(data);
+            renderEjercicios(planActual.ejercicios);
+            lucide.createIcons();
+        }
+
+        function renderCalendario(data) {
+            const container = document.getElementById('semana-container');
+            container.innerHTML = '';
+            const hoy = new Date();
+            const diaSemanaHoy = hoy.getDay();
+
+            DIAS.forEach((dia, index) => {
+                const esHoy = index === diaSemanaHoy;
+                const fueCompletado = data.completados.includes(getFechaStr(index));
+                
+                let colorClass = "bg-slate-800 text-slate-500 border-slate-700";
+                if (fueCompletado) colorClass = "bg-orange-500/20 text-orange-400 border-orange-500/50";
+                else if (esHoy) colorClass = "bg-sky-500/20 text-sky-400 border-sky-400";
+
+                container.innerHTML += `
+                    <div class="day-pill flex-1 flex flex-col items-center p-2 rounded-xl border ${colorClass} text-[10px] font-bold">
+                        <span>${dia}</span>
+                        ${fueCompletado ? '<i data-lucide="check-circle" class="w-3 h-3 mt-1"></i>' : `<span class="mt-1">${hoy.getDate() - (diaSemanaHoy - index)}</span>`}
+                    </div>
+                `;
+            });
+
+            // Si hoy ya está completado, cambiamos el botón
+            const hoyCompletado = data.completados.includes(getFechaStr(diaSemanaHoy));
+            const btn = document.getElementById('btn-completar');
+            if(hoyCompletado) {
+                btn.innerText = "¡MISIÓN DE HOY CUMPLIDA!";
+                btn.classList.add('btn-orange');
+                btn.disabled = true;
             }
+        }
+
+        function renderEjercicios(ejercicios) {
+            const container = document.getElementById('ejercicios-container');
+            container.innerHTML = '';
+            ejercicios.forEach(ex => {
+                container.innerHTML += `
+                    <div class="holo-card p-4 rounded-2xl flex justify-between items-center border-l-4 border-l-sky-500">
+                        <div>
+                            <h4 class="font-bold text-sm uppercase">${ex.n}</h4>
+                            <p class="text-[10px] text-slate-400">${ex.d}</p>
+                            <div class="flex gap-3 mt-2 text-[9px] font-black text-sky-400 uppercase">
+                                <span>${ex.s} SERIES</span>
+                                <span>${ex.r} REPS</span>
+                                <span class="text-slate-500">DESC: ${ex.t}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function registrarEntrenamiento() {
+            const data = JSON.parse(localStorage.getItem('holofit_pro'));
+            const hoyStr = getFechaStr(new Date().getDay());
+
+            if (!data.completados.includes(hoyStr)) {
+                data.completados.push(hoyStr);
+                localStorage.setItem('holofit_pro', JSON.stringify(data));
+                renderAll(data);
+                alert("¡Felicidades! Tu tigre ha subido de nivel hoy. 🐅🔥");
+            }
+        }
+
+        function getFechaStr(diaSemanaIndex) {
+            const d = new Date();
+            const diff = d.getDate() - d.getDay() + diaSemanaIndex;
+            const target = new Date(d.setDate(diff));
+            return target.toISOString().split('T')[0];
         }
 
         function abrirModal() { document.getElementById('modal-editar').classList.remove('hidden'); }
