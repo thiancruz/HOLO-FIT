@@ -6,24 +6,36 @@
     <title>HOLO-FIT | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
         .holo-card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(56, 189, 248, 0.3); backdrop-filter: blur(10px); }
         .tiger-glow { filter: drop-shadow(0 0 15px #38bdf8); }
         .btn-primary { background: linear-gradient(90deg, #38bdf8, #818cf8); transition: all 0.3s ease; }
         .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(56, 189, 248, 0.5); }
+        .hidden { display: none; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
+    <div id="auth-section" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-4">
+        <div class="holo-card p-8 rounded-3xl w-full max-w-sm text-center">
+            <h1 class="text-3xl font-bold text-sky-400 mb-2">HOLO-FIT</h1>
+            <p class="text-slate-400 mb-6">Ingresa tu email para despertar a tu tigre</p>
+            <input type="email" id="auth-email" placeholder="tu@email.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4 text-white outline-none focus:border-sky-500">
+            <button onclick="login()" class="btn-primary w-full py-4 rounded-2xl font-bold">ENVIAR LINK DE ACCESO</button>
+        </div>
+    </div>
+
     <header class="flex justify-between items-center mb-8">
         <div>
             <h1 class="text-2xl font-bold tracking-tighter text-sky-400">HOLO-FIT</h1>
-            <p class="text-slate-400 text-sm">Bienvenido, Guerrero</p>
+            <p id="display-nombre" class="text-slate-400 text-sm">Cargando guerrero...</p>
+            <button onclick="abrirModal()" class="text-[10px] text-sky-500 underline uppercase tracking-widest">Editar perfil</button>
         </div>
         <div class="text-right">
             <div class="flex items-center text-orange-400 font-bold italic">
-                <i data-lucide="flame" class="mr-1"></i> 5 DÍAS
+                <i data-lucide="flame" class="mr-1"></i> <span id="racha-val">0</span> DÍAS
             </div>
             <p class="text-xs text-slate-500 uppercase tracking-widest">Racha Actual</p>
         </div>
@@ -35,8 +47,8 @@
             <span class="text-8xl tiger-glow animate-bounce">🐯</span>
         </div>
         <div class="text-center">
-            <h2 class="text-xl font-semibold">Tigre en Modo "Motivado"</h2>
-            <p class="text-slate-400 text-sm px-6">Tu tigre está fuerte hoy. ¡Completa tu rutina para que no se duerma!</p>
+            <h2 id="tiger-status" class="text-xl font-semibold">Tigre en Modo "Esperando"</h2>
+            <p class="text-slate-400 text-sm px-6">Tu tigre necesita tus datos para evolucionar.</p>
         </div>
     </div>
 
@@ -51,107 +63,102 @@
                 <i data-lucide="play" class="text-sky-400 fill-current"></i>
             </div>
         </div>
-        <button onclick="startWorkout()" class="btn-primary w-full py-4 rounded-2xl font-bold text-lg">
-            EMPEZAR AHORA
-        </button>
+        <button onclick="startWorkout()" class="btn-primary w-full py-4 rounded-2xl font-bold text-lg">EMPEZAR AHORA</button>
     </div>
 
     <div class="grid grid-cols-2 gap-4">
         <div class="holo-card rounded-2xl p-4">
             <i data-lucide="zap" class="text-yellow-400 mb-2"></i>
-            <p class="text-2xl font-bold">1,240</p>
+            <p class="text-2xl font-bold" id="calorias-val">0</p>
             <p class="text-slate-500 text-xs uppercase">Calorías</p>
         </div>
         <div class="holo-card rounded-2xl p-4">
             <i data-lucide="trophy" class="text-orange-400 mb-2"></i>
-            <p class="text-2xl font-bold">12</p>
+            <p class="text-2xl font-bold">0</p>
             <p class="text-slate-500 text-xs uppercase">Medallas</p>
         </div>
     </div>
 
-    <div class="mt-8">
-        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4 italic">Próximos Retos</h4>
-        <div class="flex gap-4 overflow-x-auto pb-4">
-            <div class="min-w-[100px] h-24 holo-card rounded-2xl flex flex-col items-center justify-center opacity-40">
-                <i data-lucide="lock" size="20"></i>
-                <p class="text-[10px] mt-2 font-bold">7 DÍAS 🔥</p>
-            </div>
-            <div class="min-w-[100px] h-24 holo-card rounded-2xl flex flex-col items-center justify-center opacity-40 border-dashed">
-                <i data-lucide="lock" size="20"></i>
-                <p class="text-[10px] mt-2 font-bold">100 SQUATS</p>
+    <div id="modal-editar" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[110]">
+        <div class="holo-card p-6 rounded-3xl w-full max-w-sm border-2 border-sky-500">
+            <h2 class="text-xl font-bold mb-4 text-sky-400">Editar Perfil</h2>
+            <label class="block text-xs text-slate-400 uppercase mb-1">Nombre de Usuario</label>
+            <input type="text" id="input-nombre" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 mb-4 text-white outline-none">
+            <label class="block text-xs text-slate-400 uppercase mb-1">Tu Objetivo</label>
+            <select id="input-objetivo" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 mb-6 text-white outline-none">
+                <option value="Perder Grasa">Perder Grasa</option>
+                <option value="Ganar Músculo">Ganar Músculo</option>
+                <option value="Resistencia">Resistencia</option>
+            </select>
+            <div class="flex gap-3">
+                <button onclick="cerrarModal()" class="flex-1 py-3 rounded-xl bg-slate-700 font-bold">Cancelar</button>
+                <button onclick="guardarCambios()" class="flex-1 py-3 rounded-xl btn-primary font-bold">Guardar</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Funciones de Interfaz
-function abrirModal() {
-    document.getElementById('modal-editar').classList.remove('hidden');
-}
+        // 1. CONFIGURACIÓN SUPABASE (RELLENA CON TUS DATOS)
+        const SUPABASE_URL = 'https://TU_PROYECTO.supabase.co';
+        const SUPABASE_KEY = 'TU_ANON_KEY';
+        const supabase = window.supabase.createClient(https://wnihqwdclivnsyaqqyim.supabase.co, SUPABASE_KEY);
 
-function cerrarModal() {
-    document.getElementById('modal-editar').classList.add('hidden');
-}
-
-// GUARDAR DATOS EN SUPABASE
-async function guardarCambios() {
-    const nuevoNombre = document.getElementById('input-nombre').value;
-    const nuevoObjetivo = document.getElementById('input-objetivo').value;
-
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (user) {
-        const { error } = await supabase
-            .from('perfiles')
-            .update({ 
-                nombre_usuario: nuevoNombre, 
-                objetivo: nuevoObjetivo 
-            })
-            .eq('id', user.id);
-
-        if (!error) {
-            // Actualizar la pantalla inmediatamente
-            document.querySelector('p.text-slate-400.text-sm').innerText = `Bienvenido, ${nuevoNombre}`;
-            alert("Perfil actualizado en la nube 🐯✨");
-            cerrarModal();
-        } else {
-            alert("Error al guardar: " + error.message);
+        // 2. LÓGICA DE AUTENTICACIÓN
+        async function login() {
+            const email = document.getElementById('auth-email').value;
+            const { error } = await supabase.auth.signInWithOtp({ email });
+            if (error) alert(error.message);
+            else alert("¡Revisa tu correo! Te enviamos un link de acceso.");
         }
-    } else {
-        alert("Debes iniciar sesión para guardar cambios");
-    }
-}
-        // Inicializar iconos
+
+        async function checkUser() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                document.getElementById('auth-section').classList.add('hidden');
+                loadUserData(session.user);
+            }
+        }
+
+        // 3. CARGAR DATOS
+        async function loadUserData(user) {
+            let { data: perfil } = await supabase.from('perfiles').select('*').eq('id', user.id).single();
+            
+            if (perfil) {
+                document.getElementById('display-nombre').innerText = `Bienvenido, ${perfil.nombre_usuario || 'Guerrero'}`;
+                document.getElementById('racha-val').innerText = perfil.racha_dias || 0;
+                document.getElementById('calorias-val').innerText = perfil.calorias_totales || 0;
+                document.getElementById('tiger-status').innerText = `Tigre de ${perfil.nombre_usuario}`;
+            }
+        }
+
+        // 4. GUARDAR DATOS
+        async function guardarCambios() {
+            const nuevoNombre = document.getElementById('input-nombre').value;
+            const nuevoObjetivo = document.getElementById('input-objetivo').value;
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (user) {
+                const { error } = await supabase.from('perfiles').upsert({ 
+                    id: user.id, 
+                    nombre_usuario: nuevoNombre, 
+                    objetivo: nuevoObjetivo 
+                });
+
+                if (!error) {
+                    location.reload(); // Recarga para ver cambios
+                } else {
+                    alert("Error: " + error.message);
+                }
+            }
+        }
+
+        function abrirModal() { document.getElementById('modal-editar').classList.remove('hidden'); }
+        function cerrarModal() { document.getElementById('modal-editar').classList.add('hidden'); }
+        function startWorkout() { alert("¡Entrenamiento iniciado! Rugido de Tigre 🐯🔥"); }
+
+        // Inicializar
         lucide.createIcons();
-
-        function startWorkout() {
-            alert("¡Preparando tu sesión holográfica! Tu Tigre está listo.");
-        }
+        checkUser();
     </script>
-</body>
-</html>
-</script>
-<div id="modal-editar" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="holo-card p-6 rounded-3xl w-full max-w-sm border-2 border-sky-500">
-        <h2 class="text-xl font-bold mb-4 text-sky-400">Editar Perfil</h2>
-        
-        <label class="block text-xs text-slate-400 uppercase mb-1">Nombre de Usuario</label>
-        <input type="text" id="input-nombre" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 mb-4 text-white focus:border-sky-500 outline-none">
-        
-        <label class="block text-xs text-slate-400 uppercase mb-1">Tu Objetivo</label>
-        <select id="input-objetivo" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 mb-6 text-white outline-none">
-            <option value="Perder Grasa">Perder Grasa</option>
-            <option value="Ganar Músculo">Ganar Músculo</option>
-            <option value="Resistencia">Resistencia</option>
-        </select>
-
-        <div class="flex gap-3">
-            <button onclick="cerrarModal()" class="flex-1 py-3 rounded-xl bg-slate-700 font-bold">Cancelar</button>
-            <button onclick="guardarCambios()" class="flex-1 py-3 rounded-xl btn-primary font-bold">Guardar</button>
-        </div>
-    </div>
-</div>
-
-<button onclick="abrirModal()" class="text-xs text-sky-500 underline">Editar perfil</button>
 </body>
 </html>
