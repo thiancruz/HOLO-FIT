@@ -3,240 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOLO-FIT | Entrenamiento Alpha</title>
+    <title>HOLO-FIT | Personal Trainer Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .holo-card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(56, 189, 248, 0.3); backdrop-filter: blur(10px); }
-        .tiger-glow { filter: drop-shadow(0 0 15px #38bdf8); }
         .btn-primary { background: linear-gradient(90deg, #38bdf8, #818cf8); transition: all 0.3s ease; }
         .btn-orange { background: linear-gradient(90deg, #f97316, #fbbf24); }
-        .day-pill { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .hidden { display: none !important; }
+        .exercise-detail { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .exercise-card.active .exercise-detail { max-height: 500px; margin-top: 15px; }
+        input, select { background: #1e293b !important; border: 1px solid #334155 !important; color: white !important; }
     </style>
 </head>
 <body class="p-4 md:p-8 max-w-2xl mx-auto pb-24">
 
-    <div id="main-dashboard">
-        <header class="flex justify-between items-start mb-8">
+    <div id="main-dashboard" class="hidden">
+        <header class="flex justify-between items-start mb-6">
             <div>
-                <h1 class="text-2xl font-black tracking-tighter text-sky-400 uppercase">Holo-Fit</h1>
-                <p id="display-nombre" class="text-slate-400 text-sm font-medium italic">Guerrero</p>
-                <button onclick="abrirModal()" class="text-[10px] text-sky-500 underline uppercase font-bold tracking-widest mt-1">Configuración</button>
+                <h1 class="text-2xl font-black text-sky-400 uppercase italic">Holo-Fit</h1>
+                <p id="display-nombre" class="text-slate-400 text-sm font-bold">---</p>
+                <div class="flex gap-2 mt-1">
+                    <button onclick="verCalendario()" class="text-[10px] text-sky-500 underline uppercase font-bold tracking-widest flex items-center gap-1">
+                        <i data-lucide="calendar" class="w-3 h-3"></i> Historial
+                    </button>
+                    <button onclick="reiniciarApp()" class="text-[10px] text-red-500 underline uppercase font-bold tracking-widest">Reiniciar</button>
+                </div>
             </div>
             <div class="text-right">
-                <div class="flex items-center justify-end text-orange-400 font-black italic text-xl">
-                    <i data-lucide="zap" class="mr-1 w-5 h-5"></i> <span id="racha-val">0</span>
+                <div class="flex items-center justify-end text-orange-400 font-black text-xl">
+                    <i data-lucide="flame" class="mr-1 w-5 h-5"></i> <span id="racha-val">0</span>
                 </div>
-                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest text-right">Sesiones Totales</p>
+                <p class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Sesiones</p>
             </div>
         </header>
 
-        <div class="mb-8">
-            <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4 italic">Cronograma de Misión</h3>
-            <div class="flex justify-between gap-1" id="semana-container">
-                </div>
-        </div>
+        <div id="semana-container" class="flex justify-between gap-1 mb-8"></div>
 
-        <div class="flex flex-col items-center mb-10">
-            <div class="relative w-40 h-40 mb-4 flex items-center justify-center">
+        <div class="flex flex-col items-center mb-8">
+            <div class="relative w-36 h-36 mb-4 flex items-center justify-center">
                 <div class="absolute inset-0 bg-sky-500/10 rounded-full animate-pulse"></div>
-                <span id="tiger-emoji" class="text-7xl tiger-glow animate-bounce">🐯</span>
+                <span id="avatar-emoji" class="text-7xl drop-shadow-2xl">🐯</span>
             </div>
             <div class="text-center">
-                <h2 id="titulo-rutina" class="text-xl font-black tracking-tight uppercase italic text-sky-400">Cargando Plan...</h2>
-                <p id="objetivo-tag" class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">---</p>
+                <h2 id="titulo-rutina" class="text-xl font-black italic text-white uppercase tracking-tight">Cargando...</h2>
+                <div id="lugar-badge" class="mt-1 inline-block bg-slate-800 text-sky-400 text-[9px] font-black px-3 py-1 rounded-full border border-sky-500/30 uppercase">---</div>
             </div>
         </div>
 
-        <div id="ejercicios-container" class="space-y-3 mb-8">
-            </div>
+        <div id="ejercicios-container" class="space-y-4 mb-10"></div>
 
-        <button id="btn-completar" onclick="registrarEntrenamiento()" class="btn-primary w-full py-5 rounded-2xl font-black text-lg shadow-lg uppercase tracking-tighter transition-all">
-            Marcar Día como Completado
+        <button id="btn-completar" onclick="registrarEntrenamiento()" class="btn-primary w-full py-5 rounded-3xl font-black text-lg shadow-xl uppercase tracking-tighter hover:scale-[1.02] active:scale-95 transition-all">
+            Finalizar Entrenamiento de Hoy
         </button>
     </div>
 
-    <div id="modal-editar" class="fixed inset-0 bg-slate-950 z-[200] flex items-center justify-center p-4 backdrop-blur-xl">
-        <div class="holo-card p-8 rounded-[2.5rem] w-full max-w-sm border-2 border-sky-500/30">
-            <h2 class="text-3xl font-black mb-2 text-white italic uppercase tracking-tighter">Bienvenido</h2>
-            <p class="text-slate-400 text-xs mb-8 uppercase tracking-widest font-bold">Configura tu perfil alpha</p>
+    <div id="modal-encuesta" class="fixed inset-0 bg-slate-950 z-[200] flex items-center justify-center p-4 backdrop-blur-xl">
+        <div class="holo-card p-8 rounded-[2.5rem] w-full max-w-md border-2 border-sky-500/30 shadow-2xl overflow-y-auto max-h-[90vh]">
+            <h2 class="text-3xl font-black mb-2 text-sky-400 italic italic tracking-tighter uppercase">Crear Perfil</h2>
+            <p class="text-slate-500 text-[10px] mb-8 uppercase font-bold tracking-widest">Personaliza tu experiencia holográfica</p>
             
-            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 italic">Nombre de Guerrero</label>
-            <input type="text" id="input-nombre" placeholder="TU NOMBRE" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 mb-6 text-white outline-none focus:border-sky-500 font-bold">
-            
-            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 italic">Objetivo de Misión</label>
-            <div class="grid grid-cols-1 gap-3 mb-10">
-                <button onclick="selectObj('Grasa', this)" class="obj-btn p-4 rounded-xl border border-slate-700 bg-slate-800 text-left text-sm font-bold hover:border-sky-500 transition-all">🔥 Quema de Grasa</button>
-                <button onclick="selectObj('Musculo', this)" class="obj-btn p-4 rounded-xl border border-slate-700 bg-slate-800 text-left text-sm font-bold hover:border-sky-500 transition-all">💪 Ganar Músculo</button>
-                <button onclick="selectObj('Resistencia', this)" class="obj-btn p-4 rounded-xl border border-slate-700 bg-slate-800 text-left text-sm font-bold hover:border-sky-500 transition-all">⚡ Resistencia</button>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase ml-2">Nombre de Guerrero</label>
+                    <input type="text" id="in-nombre" class="w-full p-4 rounded-2xl outline-none focus:border-sky-500" placeholder="Nombre">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase ml-2">Edad</label>
+                        <input type="number" id="in-edad" class="w-full p-4 rounded-2xl outline-none" placeholder="Años">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase ml-2">Sexo</label>
+                        <select id="in-sexo" class="w-full p-4 rounded-2xl outline-none">
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase ml-2">Peso (kg)</label>
+                        <input type="number" id="in-peso" class="w-full p-4 rounded-2xl outline-none" placeholder="70">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-500 uppercase ml-2">Estatura (cm)</label>
+                        <input type="number" id="in-estatura" class="w-full p-4 rounded-2xl outline-none" placeholder="170">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase ml-2">Objetivo Principal</label>
+                    <select id="in-objetivo" class="w-full p-4 rounded-2xl outline-none">
+                        <option value="Musculo">Ganar Músculo 🦁</option>
+                        <option value="Grasa">Perder Grasa 🐥</option>
+                        <option value="Resistencia">Resistencia 🐯</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase ml-2">Lugar de Entrenamiento</label>
+                    <select id="in-lugar" class="w-full p-4 rounded-2xl outline-none">
+                        <option value="gym">Gimnasio Pro</option>
+                        <option value="casa">En Casa (Sin equipo)</option>
+                        <option value="aire_libre">Gym al Aire Libre</option>
+                    </select>
+                </div>
             </div>
 
-            <button onclick="guardarCambios()" class="btn-primary w-full py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] text-slate-900">Iniciar Sistema</button>
+            <button onclick="guardarPerfil()" class="btn-primary w-full py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] text-slate-900 mt-8">Generar Plan Inteligente</button>
+        </div>
+    </div>
+
+    <div id="modal-calendario" class="hidden fixed inset-0 bg-slate-950/95 z-[300] flex items-center justify-center p-4">
+        <div class="holo-card p-6 rounded-[2rem] w-full max-w-sm text-center">
+            <h3 class="text-xl font-black mb-4 text-sky-400">HISTORIAL DE GLORIA</h3>
+            <div id="historial-lista" class="space-y-2 max-h-60 overflow-y-auto mb-6 text-sm text-slate-300">
+                </div>
+            <button onclick="cerrarCalendario()" class="w-full py-3 bg-slate-800 rounded-xl font-bold uppercase text-[10px]">Volver al Dashboard</button>
         </div>
     </div>
 
     <script>
-        // --- BASE DE DATOS DE ENTRENAMIENTOS ---
-        const PLANES = {
-            Grasa: {
-                nombre: "Protocolo Incinerador",
-                ejercicios: [
-                    { n: "Burpees", d: "Salto explosivo con flexión", s: "4", r: "12", t: "30s" },
-                    { n: "Escaladores", d: "Rodillas al pecho rápido", s: "4", r: "40s", t: "30s" },
-                    { n: "Jumping Jacks", d: "Salto abriendo brazos/piernas", s: "3", r: "50s", t: "20s" },
-                    { n: "Sentadilla Salto", d: "Sentadilla con despegue", s: "4", r: "15", t: "45s" },
-                    { n: "Plancha dinámica", d: "Subir y bajar antebrazos", s: "3", r: "45s", t: "30s" },
-                    { n: "Zancadas", d: "Paso largo alternado", s: "4", r: "20", t: "30s" }
-                ]
-            },
+        // DB DE EJERCICIOS ADAPTATIVOS
+        const DB_EJERCICIOS = {
             Musculo: {
-                nombre: "Hipertrofia Alpha",
-                ejercicios: [
-                    { n: "Flexiones Diamante", d: "Manos juntas en forma de diamante", s: "4", r: "12", t: "60s" },
-                    { n: "Sentadilla Búlgara", d: "Pie atrás en silla/banco", s: "4", r: "10/lado", t: "60s" },
-                    { n: "Flexiones de Arquero", d: "Bajar alternando peso a un brazo", s: "3", r: "8", t: "90s" },
-                    { n: "Puente de Glúteo", d: "Elevación de pelvis (añadir peso)", s: "4", r: "15", t: "60s" },
-                    { n: "Fondos en Silla", d: "Extensión de tríceps", s: "4", r: "12", t: "60s" },
-                    { n: "Dominadas / Remo", d: "Tirón vertical o bajo mesa", s: "4", r: "10", t: "90s" }
+                avatar: "🦁",
+                casa: [
+                    { n: "Flexiones con Pausa", d: "Baja lento, mantén 2 segundos abajo y sube explosivo. Trabaja pecho y tríceps.", s: "4", r: "15", t: "60s", img: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=60&w=200" },
+                    { n: "Sentadilla Búlgara", d: "Eleva un pie en una silla o sofá. Baja hasta que la rodilla trasera casi toque el suelo.", s: "4", r: "12/lado", t: "60s", img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=60&w=200" }
+                ],
+                gym: [
+                    { n: "Press de Banca", d: "Controla la barra hasta el pecho y empuja fuerte. Mantén los pies plantados.", s: "4", r: "10", t: "90s", img: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&q=60&w=200" },
+                    { n: "Sentadilla con Barra", d: "Barra sobre los trapecios. Baja rompiendo el paralelo con la espalda recta.", s: "4", r: "8", t: "120s", img: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&q=60&w=200" }
+                ],
+                aire_libre: [
+                    { n: "Dominadas Supinas", d: "Cuélgate de la barra y sube la barbilla por encima. Enfócate en el bíceps y espalda.", s: "4", r: "Fallo", t: "90s", img: "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?auto=format&fit=crop&q=60&w=200" }
                 ]
             },
-            Resistencia: {
-                nombre: "Resistencia Core-X",
-                ejercicios: [
-                    { n: "Plancha Abdominal", d: "Cuerpo recto, antebrazos", s: "4", r: "60s", t: "30s" },
-                    { n: "V-Ups", d: "Tocar puntas pies sentado", s: "4", r: "15", t: "30s" },
-                    { n: "Superman", d: "Elevación lumbar y piernas", s: "3", r: "20", t: "20s" },
-                    { n: "Bicycle Crunches", d: "Codo a rodilla contraria", s: "4", r: "40s", t: "20s" },
-                    { n: "Dead Bug", d: "Extensión brazo/pierna opuesta", s: "3", r: "12", t: "30s" },
-                    { n: "Side Plank", d: "Plancha lateral", s: "3", r: "45s/lado", t: "30s" }
+            Grasa: {
+                avatar: "🐥",
+                casa: [
+                    { n: "Burpees de Combate", d: "Pecho al suelo, salto explosivo y palmada arriba. No te detengas.", s: "4", r: "20", t: "30s", img: "https://images.unsplash.com/photo-1599058917232-d750c1859d7c?auto=format&fit=crop&q=60&w=200" }
+                ],
+                gym: [
+                    { n: "Sprint en Cinta", d: "Inclinación 2%, velocidad máxima por 30 segundos. Recupera caminando.", s: "10", r: "30s", t: "30s", img: "https://images.unsplash.com/photo-1534258936925-c58bed479fcb?auto=format&fit=crop&q=60&w=200" }
                 ]
-            }
+            },
+            Resistencia: { avatar: "🐯", casa: [{n: "Plancha Ninja", d: "Mantén posición de tabla apretando glúteos.", s: "4", r: "60s", t: "30s", img: "https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?auto=format&fit=crop&q=60&w=200"}] }
         };
 
         const DIAS = ["DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB"];
-        let objetivoSeleccionado = '';
 
-        // --- LÓGICA CORE ---
         document.addEventListener('DOMContentLoaded', () => {
-            const data = JSON.parse(localStorage.getItem('holofit_pro'));
-            if (!data) {
-                abrirModal();
+            const perfil = JSON.parse(localStorage.getItem('holofit_perfil'));
+            if (!perfil) {
+                document.getElementById('modal-encuesta').classList.remove('hidden');
             } else {
-                cerrarModal();
-                renderAll(data);
+                renderDashboard(perfil);
             }
         });
 
-        function selectObj(val, btn) {
-            objetivoSeleccionado = val;
-            document.querySelectorAll('.obj-btn').forEach(b => b.classList.remove('border-sky-500', 'bg-sky-500/10'));
-            btn.classList.add('border-sky-500', 'bg-sky-500/10');
-        }
-
-        function guardarCambios() {
-            const nombre = document.getElementById('input-nombre').value;
-            if (!nombre || !objetivoSeleccionado) return alert("Completa todos los datos, Guerrero.");
-
-            const nuevoPerfil = {
-                nombre: nombre,
-                objetivo: objetivoSeleccionado,
-                racha: 0,
-                completados: [] // Guardará fechas tipo "2023-10-27"
+        function guardarPerfil() {
+            const data = {
+                nombre: document.getElementById('in-nombre').value,
+                edad: document.getElementById('in-edad').value,
+                peso: document.getElementById('in-peso').value,
+                estatura: document.getElementById('in-estatura').value,
+                sexo: document.getElementById('in-sexo').value,
+                objetivo: document.getElementById('in-objetivo').value,
+                lugar: document.getElementById('in-lugar').value,
+                completados: []
             };
 
-            localStorage.setItem('holofit_pro', JSON.stringify(nuevoPerfil));
-            cerrarModal();
-            renderAll(nuevoPerfil);
+            if(!data.nombre || !data.peso) return alert("Guerrero, rellena tus datos.");
+            
+            localStorage.setItem('holofit_perfil', JSON.stringify(data));
+            document.getElementById('modal-encuesta').classList.add('hidden');
+            renderDashboard(data);
         }
 
-        function renderAll(data) {
-            document.getElementById('display-nombre').innerText = `Guerrero ${data.nombre}`;
-            document.getElementById('racha-val').innerText = data.completados.length;
-            document.getElementById('objetivo-tag').innerText = `PLAN: ${data.objetivo}`;
+        function renderDashboard(perfil) {
+            document.getElementById('main-dashboard').classList.remove('hidden');
+            document.getElementById('display-nombre').innerText = `${perfil.nombre} | ${perfil.peso}kg - ${perfil.edad} años`;
+            document.getElementById('racha-val').innerText = perfil.completados.length;
+            document.getElementById('lugar-badge').innerText = `Ubicación: ${perfil.lugar}`;
             
-            const planActual = PLANES[data.objetivo];
-            document.getElementById('titulo-rutina').innerText = planActual.nombre;
-
-            renderCalendario(data);
-            renderEjercicios(planActual.ejercicios);
+            const configObj = DB_EJERCICIOS[perfil.objetivo];
+            document.getElementById('avatar-emoji').innerText = configObj.avatar;
+            document.getElementById('titulo-rutina').innerText = `Plan ${perfil.objetivo}`;
+            
+            // Cargar ejercicios basados en el lugar (si no hay para ese lugar específico, carga el de casa)
+            const listaEx = configObj[perfil.lugar] || configObj.casa;
+            renderEjercicios(listaEx);
+            renderSemana(perfil.completados);
             lucide.createIcons();
         }
 
-        function renderCalendario(data) {
-            const container = document.getElementById('semana-container');
-            container.innerHTML = '';
-            const hoy = new Date();
-            const diaSemanaHoy = hoy.getDay();
-
-            DIAS.forEach((dia, index) => {
-                const esHoy = index === diaSemanaHoy;
-                const fueCompletado = data.completados.includes(getFechaStr(index));
-                
-                let colorClass = "bg-slate-800 text-slate-500 border-slate-700";
-                if (fueCompletado) colorClass = "bg-orange-500/20 text-orange-400 border-orange-500/50";
-                else if (esHoy) colorClass = "bg-sky-500/20 text-sky-400 border-sky-400";
-
-                container.innerHTML += `
-                    <div class="day-pill flex-1 flex flex-col items-center p-2 rounded-xl border ${colorClass} text-[10px] font-bold">
-                        <span>${dia}</span>
-                        ${fueCompletado ? '<i data-lucide="check-circle" class="w-3 h-3 mt-1"></i>' : `<span class="mt-1">${hoy.getDate() - (diaSemanaHoy - index)}</span>`}
-                    </div>
-                `;
-            });
-
-            // Si hoy ya está completado, cambiamos el botón
-            const hoyCompletado = data.completados.includes(getFechaStr(diaSemanaHoy));
-            const btn = document.getElementById('btn-completar');
-            if(hoyCompletado) {
-                btn.innerText = "¡MISIÓN DE HOY CUMPLIDA!";
-                btn.classList.add('btn-orange');
-                btn.disabled = true;
-            }
-        }
-
-        function renderEjercicios(ejercicios) {
+        function renderEjercicios(lista) {
             const container = document.getElementById('ejercicios-container');
             container.innerHTML = '';
-            ejercicios.forEach(ex => {
+            lista.forEach((ex, i) => {
                 container.innerHTML += `
-                    <div class="holo-card p-4 rounded-2xl flex justify-between items-center border-l-4 border-l-sky-500">
-                        <div>
-                            <h4 class="font-bold text-sm uppercase">${ex.n}</h4>
-                            <p class="text-[10px] text-slate-400">${ex.d}</p>
-                            <div class="flex gap-3 mt-2 text-[9px] font-black text-sky-400 uppercase">
-                                <span>${ex.s} SERIES</span>
-                                <span>${ex.r} REPS</span>
-                                <span class="text-slate-500">DESC: ${ex.t}</span>
+                    <div class="exercise-card holo-card p-5 rounded-3xl border-l-4 border-sky-500 cursor-pointer" onclick="toggleEx(this)">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-black text-white uppercase text-sm">${ex.n}</h4>
+                                <div class="flex gap-4 mt-1 text-[10px] font-bold text-sky-400 uppercase">
+                                    <span>${ex.s} SERIES</span>
+                                    <span>${ex.r} REPS</span>
+                                </div>
                             </div>
+                            <i data-lucide="chevron-down" class="text-slate-500 w-5 h-5"></i>
+                        </div>
+                        <div class="exercise-detail">
+                            <img src="${ex.img}" class="w-full h-32 object-cover rounded-2xl mb-3 border border-slate-700 shadow-lg">
+                            <p class="text-xs text-slate-300 leading-relaxed font-medium bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+                                <span class="text-sky-400 font-bold">Instrucciones:</span> ${ex.d}
+                                <br><br>
+                                <span class="text-orange-400 font-bold">Descanso:</span> ${ex.t} entre series.
+                            </p>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function registrarEntrenamiento() {
-            const data = JSON.parse(localStorage.getItem('holofit_pro'));
-            const hoyStr = getFechaStr(new Date().getDay());
+        function toggleEx(el) {
+            el.classList.toggle('active');
+            const icon = el.querySelector('[data-lucide]');
+            if(el.classList.contains('active')) {
+                icon.setAttribute('data-lucide', 'chevron-up');
+            } else {
+                icon.setAttribute('data-lucide', 'chevron-down');
+            }
+            lucide.createIcons();
+        }
 
-            if (!data.completados.includes(hoyStr)) {
-                data.completados.push(hoyStr);
-                localStorage.setItem('holofit_pro', JSON.stringify(data));
-                renderAll(data);
-                alert("¡Felicidades! Tu tigre ha subido de nivel hoy. 🐅🔥");
+        function renderSemana(completados) {
+            const container = document.getElementById('semana-container');
+            container.innerHTML = '';
+            const hoy = new Date().getDay();
+            const hoyStr = new Date().toISOString().split('T')[0];
+
+            DIAS.forEach((dia, i) => {
+                const esHoy = i === hoy;
+                const done = completados.includes(getFechaStr(i));
+                let color = "bg-slate-800 text-slate-500 border-slate-700";
+                if(done) color = "bg-orange-500/20 text-orange-400 border-orange-500/50";
+                else if(esHoy) color = "bg-sky-500/20 text-sky-400 border-sky-400";
+
+                container.innerHTML += `
+                    <div class="flex-1 p-2 flex flex-col items-center rounded-xl border ${color} text-[9px] font-black">
+                        ${dia}
+                        <i data-lucide="${done ? 'check-circle' : 'circle'}" class="w-3 h-3 mt-1"></i>
+                    </div>
+                `;
+            });
+
+            if(completados.includes(hoyStr)) {
+                const b = document.getElementById('btn-completar');
+                b.innerText = "¡SESIÓN FINALIZADA! 🏆";
+                b.classList.add('btn-orange');
+                b.disabled = true;
             }
         }
 
-        function getFechaStr(diaSemanaIndex) {
+        function getFechaStr(index) {
             const d = new Date();
-            const diff = d.getDate() - d.getDay() + diaSemanaIndex;
-            const target = new Date(d.setDate(diff));
-            return target.toISOString().split('T')[0];
+            const diff = d.getDate() - d.getDay() + index;
+            return new Date(d.setDate(diff)).toISOString().split('T')[0];
         }
 
-        function abrirModal() { document.getElementById('modal-editar').classList.remove('hidden'); }
-        function cerrarModal() { document.getElementById('modal-editar').classList.add('hidden'); }
+        function registrarEntrenamiento() {
+            const perfil = JSON.parse(localStorage.getItem('holofit_perfil'));
+            const hoyStr = new Date().toISOString().split('T')[0];
+            if(!perfil.completados.includes(hoyStr)) {
+                perfil.completados.push(hoyStr);
+                localStorage.setItem('holofit_perfil', JSON.stringify(perfil));
+                location.reload();
+            }
+        }
+
+        function verCalendario() {
+            const perfil = JSON.parse(localStorage.getItem('holofit_perfil'));
+            const lista = document.getElementById('historial-lista');
+            lista.innerHTML = perfil.completados.length > 0 
+                ? perfil.completados.map(f => `<div class="bg-slate-800 p-2 rounded-lg">🔥 Sesión: ${f}</div>`).join('')
+                : "Aún no hay registros de batalla.";
+            document.getElementById('modal-calendario').classList.remove('hidden');
+        }
+
+        function cerrarCalendario() { document.getElementById('modal-calendario').classList.add('hidden'); }
+        function reiniciarApp() { if(confirm("¿Borrar todo?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
