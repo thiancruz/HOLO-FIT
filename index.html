@@ -436,282 +436,110 @@ function planIdx(dayJS){ return dayJS===0?6:dayJS-1; }
 
 /* ─── RUTINAS DETALLADAS ─── */
 const RUTINAS={
- /* ─── RUTINAS DETALLADAS (MEJORADAS CON TÉCNICA Y MEDIOS) ─── */
-const RUTINAS={
-  superior:{
-    Musculo:{
-      meta:"Hipertrofia Superior",intensidad:"Alta",tipo:"Fuerza",avatar:"🦁",
-      gym:[
-        {
-          n:"Press Pecho Plano",
-          d:"TÉCNICA ALPHA: Agarre a 1.5x ancho de hombros. Retrae escápulas (aprieta la espalda contra el banco) antes de empezar. Baja controlado en 2-3 segundos hasta tocar suavemente el esternón. Empuja explosivo, visualizando cómo exprimes el pectoral en la cima.",
-          s:4,r:"10",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-PressPlanoGym" // Imagen 3D HOLO-FIT generada
-        },
-        {
-          n:"Press Inclinado",
-          d:"TÉCNICA ALPHA: Banco a 45° de inclinación. Enfoca la mente en la porción superior del pecho (cerca de la clavícula). Baja la barra hasta la parte alta del torso con control. Mantén los codos ligeramente hacia adentro, no abiertos a 90°.",
-          s:3,r:"12",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-PressInclinadoGym"
-        },
-        {
-          n:"Remo con Barra",
-          d:"TÉCNICA ALPHA: Espalda plana (paralela al suelo si es posible), rodillas semiflexionadas. Agarre prono. Tira de la barra hacia el ombligo, apretando las escápulas (como si quisieras sostener una moneda entre ellas) en la cima. Baja lento.",
-          s:4,r:"10",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-RemoBarraGym"
-        },
-        {
-          n:"Press Militar",
-          d:"TÉCNICA ALPHA: De pie. Core y glúteos fuertemente apretados para proteger la lumbar. La barra pasa rozando la nariz. Al subir, 'mete la cabeza' entre los brazos para un rango completo de movimiento en los hombros. No hiperextiendas la espalda.",
-          s:3,r:"12",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-PressMilitarGym"
-        },
-        {
-          n:"Curl Bíceps",
-          d:"TÉCNICA ALPHA: Codos fijos a los costados del cuerpo. Imagina que son bisagras bloqueadas. Sube la barra sin balancear el torso ('trampear'). Aprieta el bíceps 1 segundo arriba y baja muy lento, resistiendo el peso.",
-          s:3,r:"15",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-CurlBicepsGym"
-        },
-        {
-          n:"Extensión Tríceps",
-          d:"TÉCNICA ALPHA: Usa la polea alta con cuerda. Codos pegados a las costillas. Extiende completamente los brazos hacia abajo y abre la cuerda al final para una máxima contracción. Vuelve arriba controlando que el codo no se mueva de su sitio.",
-          s:3,r:"15",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-ExtensionTricepsGym"
-        },
+{n:"Press Pecho Plano",d:"Agarre a 1.5x ancho de hombros. Baja hasta tocar el pecho, empuja explosivo.",s:4,r:"10",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
+
+        {n:"Press Inclinado",d:"45° de inclinación. Siente el pecho superior trabajar en cada repetición.",s:3,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=500"},
+
+        {n:"Remo con Barra",d:"Espalda plana, codos pegados al cuerpo. Contrae escápulas en la cima.",s:4,r:"10",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
+
+        {n:"Press Militar",d:"Core apretado, barra pasa frente a la cara. No hiperextiendas la espalda.",s:3,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
+
+        {n:"Curl Bíceps",d:"Codos fijos, tensión constante. No balancees el torso para trampear.",s:3,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+
+        {n:"Extensión Tríceps",d:"Tríceps bajo tensión completa. Baja lento, extiende hasta bloquear.",s:3,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
+
       ],
+
       casa:[
-        {
-          n:"Flexiones",
-          d:"TÉCNICA ALPHA: Cuerpo recto como una tabla (aprieta abdomen y glúteos). Manos bajo los hombros. Baja controlando el movimiento en 3 segundos hasta que el pecho roce el suelo. Empuja explosivo hacia arriba.",
-          s:4,r:"15",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-FlexionesCasa"
-        },
-        {
-          n:"Flexión Diamante",
-          d:"TÉCNICA ALPHA: Manos juntas bajo el pecho formando un diamante con índices y pulgares. Esto enfoca el trabajo brutalmente en los tríceps y el centro del pecho. Mantén el cuerpo alineado y los codos pegados.",
-          s:3,r:"12",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-FlexionDiamanteCasa"
-        },
-        {
-          n:"Fondos Paralelas",
-          d:"TÉCNICA ALPHA: Usa dos sillas estables. Manos en los bordes, baja el cuerpo hasta que tus codos formen 90°. Asegúrate de tirar los codos hacia atrás, no hacia afuera, para enfocar el tríceps y no lesionar el hombro.",
-          s:4,r:"12",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-FondosSillasCasa"
-        },
-        {
-          n:"Empuje Alpha",
-          d:"TÉCNICA ALPHA: Manos elevadas (sobre una silla o cama) y pies en el suelo. Esto simula un press inclinado y enfoca la porción superior del pecho. Baja el pecho hacia las manos de forma controlada.",
-          s:3,r:"15",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-EmpujeAlphaCasa"
-        },
-        {
-          n:"Tirón Vertical",
-          d:"TÉCNICA ALPHA: Usa una barra de dominadas o la técnica de 'puerta'. Cuelga y concéntrate en tirar con los dorsales (la 'espalda ancha'), no con los bíceps. Si usas la puerta, colócate debajo y tira del cuerpo hacia arriba apretando la espalda.",
-          s:3,r:"10",t:"largo",
-          img:"https://rebrand.ly/HOLO-FIT-TironVerticalCasa"
-        },
-        {
-          n:"Paso de Oso",
-          d:"TÉCNICA ALPHA: En cuadrupedia, levanta las rodillas 2cm del suelo. Avanza mano y pie contrario simultáneamente con control. El core debe estar blindado; imagina que tienes un vaso de agua en la espalda y no quieres que se caiga.",
-          s:3,r:"10m",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-PasoOsoCasa"
-        },
+
+        {n:"Flexiones",d:"Cuerpo recto como tabla. Toca el pecho al suelo, empuja explosivo.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
+
+        {n:"Flexión Diamante",d:"Manos juntas formando diamante. Trabaja el tríceps al máximo.",s:3,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=500"},
+
+        {n:"Fondos Paralelas",d:"Usa dos sillas. Baja 90° codos atrás, no afuera.",s:4,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
+
+        {n:"Empuje Alpha",d:"Manos elevadas. Énfasis en la porción superior del pecho.",s:3,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
+
+        {n:"Tirón Vertical",d:"Usa la barra de dominadas o la puerta. Concentra los dorsales.",s:3,r:"10",t:"largo",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+
+        {n:"Paso de Oso",d:"Rodillas al ras del suelo, avanza con control. Core siempre firme.",s:3,r:"10m",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
+
       ]
+
     },
+
     Grasa:{
+
       meta:"Quema Superior HIIT",intensidad:"Muy Alta",tipo:"HIIT",avatar:"🔥",
+
       gym:[
-        {
-          n:"Press Pecho Plano",
-          d:"TÉCNICA ALPHA: Peso muy ligero (30-40% de tu máximo). El objetivo no es la fuerza, sino la fatiga metabólica. Velocidad máxima en la subida, control en la bajada. ¡Ritmo cardíaco arriba!",
-          s:4,r:"20",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-PressPlanoGrasaGym"
-        },
-        {
-          n:"Remo con Barra",
-          d:"TÉCNICA ALPHA: Movimiento explosivo. Tira rápido y baja controlado pero sin pausa. Mantén la espalda plana en todo momento. Minimiza el descanso entre repeticiones dentro de la serie.",
-          s:4,r:"20",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-RemoBarraGrasaGym"
-        },
-        {
-          n:"Press Militar",
-          d:"TÉCNICA ALPHA: Usa mancuernas ligeras o una barra poco cargada. Empuja con fuerza, baja rápido y repite. Siente cómo los hombros se llenan de sangre y la respiración se acelera.",
-          s:4,r:"15",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-PressMilitarGrasaGym"
-        },
-        {
-          n:"Jalón Polea",
-          d:"TÉCNICA ALPHA: Agarre ancho. Tira de la barra al pecho con explosividad. Mantén la tensión constante en los dorsales. La velocidad controlada es clave aquí para no perder la técnica.",
-          s:4,r:"18",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-JalonPoleaGrasaGym"
-        },
-        {
-          n:"Elevaciones Laterales",
-          d:"TÉCNICA ALPHA: Mancuernas muy ligeras. Movimiento continuo, como si estuvieras 'aleteando' con control. Los hombros deben arder. Mantén los trapecios relajados.",
-          s:3,r:"25",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-ElevacionesLateralesGrasaGym"
-        },
-        {
-          n:"Escaladores",
-          d:"TÉCNICA ALPHA: En posición de flexión, core blindado. Lleva las rodillas al pecho lo más rápido que puedas, simulando una carrera en el suelo. Mantén la cadera baja y el ritmo cardíaco al máximo.",
-          s:4,r:"45s",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-EscaladoresGrasaGym"
-        },
+
+        {n:"Press Pecho Plano",d:"Peso ligero, ritmo rápido. Máximas reps en el tiempo.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
+
+        {n:"Remo con Barra",d:"Movimiento explosivo. No descanses entre series.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
+
+        {n:"Press Militar",d:"Empuja la barra al máximo, baja controlado.",s:4,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
+
+        {n:"Jalón Polea",d:"Agarre ancho, contrae dorsales. Velocidad controlada.",s:4,r:"18",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+
+        {n:"Elevaciones Laterales",d:"Peso ligero, movimiento continuo. Hombros en llamas.",s:3,r:"25",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
+
+        {n:"Escaladores",d:"Máxima velocidad. Rodillas al pecho, Core firme.",s:4,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
+
       ],
+
       casa:[
-        {
-          n:"Burpees Infierno",
-          d:"TÉCNICA ALPHA: De pie, baja a flexión, toca el pecho en el suelo, sube explosivo y haz un salto final con palmada arriba. Sin parar. Es un ejercicio de cuerpo completo diseñado para llevarte al límite. ¡Mentalidad de guerrero!",
-          s:5,r:"12",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-BurpeesCasa"
-        },
-        {
-          n:"Flexiones",
-          d:"TÉCNICA ALPHA: Pecho al suelo en cada repetición. Ritmo rápido pero con rango completo. Si te fatigas, apoya las rodillas pero no pares el movimiento. Máximo esfuerzo.",
-          s:4,r:"20",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-FlexionesCasa"
-        },
-        {
-          n:"Escaladores",
-          d:"TÉCNICA ALPHA: ¡Fuego en el core! Rodillas al pecho a máxima velocidad. Mantén la estabilidad del torso. Si pierdes la forma, frena un segundo y vuelve a arrancar con todo.",
-          s:4,r:"45s",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-EscaladoresGrasaCasa"
-        },
-        {
-          n:"Fondos Paralelas",
-          d:"TÉCNICA ALPHA: Usa dos sillas. Ritmo explosivo en la subida, control en la bajada. No llegues al bloqueo total del codo arriba para mantener la tensión en el tríceps. ¡Que queme!",
-          s:4,r:"15",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-FondosSillasCasa"
-        },
-        {
-          n:"Jumping Jacks",
-          d:"TÉCNICA ALPHA: Mantén el ritmo cardíaco alto. Salta abriendo piernas y brazos, y cierra con coordinación. Aterriza suavemente con las puntas de los pies. Mantén la respiración acompasada.",
-          s:4,r:"60s",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-JumpingJacksCasa"
-        },
-        {
-          n:"Sprint Estático",
-          d:"TÉCNICA ALPHA: Corre en el sitio, core fuertemente apretado. Sube las rodillas lo más alto posible y mueve los brazos con potencia. Imagina que te persigue un depredador Alpha. ¡Quema todo!",
-          s:4,r:"45s",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-SprintEstaticoCasa"
-        },
+
+        {n:"Burpees Infierno",d:"Pecho al suelo, salta con los brazos arriba. Sin parar.",s:5,r:"12",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+
+        {n:"Flexiones",d:"Pecho al suelo. Ritmo rápido. Máximo esfuerzo.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
+
+        {n:"Escaladores",d:"Core en fuego. Rodillas al pecho lo más rápido posible.",s:4,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500"},
+
+        {n:"Fondos Paralelas",d:"Dos sillas. Ritmo explosivo. Tríceps al límite.",s:4,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
+
+        {n:"Jumping Jacks",d:"Mantén el ritmo cardíaco alto durante toda la serie.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=500"},
+
+        {n:"Sprint Estático",d:"Rodillas al máximo, corre en el sitio. ¡Quema todo!",s:4,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
+
       ]
+
     },
+
     Resistencia:{
+
       meta:"Resistencia Superior",intensidad:"Media-Alta",tipo:"Funcional",avatar:"⚡",
+
       gym:[
-        {
-          n:"Press Pecho Plano",
-          d:"TÉCNICA ALPHA: Peso moderado (50-60% máx). Ejecuta una fase negativa (bajada) muy lenta de 4 segundos para aumentar el tiempo bajo tensión y la resistencia muscular. Sube con control.",
-          s:4,r:"15",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-PressPlanoGym"
-        },
-        {
-          n:"Remo con Barra",
-          d:"TÉCNICA ALPHA: Tempo controlado. Agarre supino. Sube en 2s, aprieta 2s arriba (máxima contracción de dorsales) y baja en 3s. Cada repetición debe ser perfecta y consciente.",
-          s:4,r:"15",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-RemoBarraGym"
-        },
-        {
-          n:"Press Militar",
-          d:"TÉCNICA ALPHA: Con mancuernas. Asegura un rango completo: baja hasta que las mancuernas rocen las orejas, sube hasta casi bloquear codos. Hombros y core estables en todo momento.",
-          s:4,r:"15",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-PressMilitarGym"
-        },
-        {
-          n:"Jalón Polea",
-          d:"TÉCNICA ALPHA: Agarre estrecho y neutro. Baja la barra al pecho superior, sostén la contracción 2 segundos y sube lentamente sintiendo cómo se estiran los dorsales. Mantén el torso quieto.",
-          s:3,r:"18",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-JalonPoleaGrasaGym" // Reutilizada para consistencia
-        },
-        {
-          n:"Curl Bíceps",
-          d:"TÉCNICA ALPHA: Con barra Z. Sube controlado, aprieta 2s isométrico en la cima de la repetición. Baja resistiendo el peso. Concéntrate en la conexión mente-músculo para una resistencia total.",
-          s:3,r:"20",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-CurlBicepsGym"
-        },
-        {
-          n:"Plancha Abdominal",
-          d:"TÉCNICA ALPHA: Posición de tabla sobre codos. Cuerpo recto. Respira profundo y controlado. Aprieta voluntariamente abdomen, glúteos y piernas. Visualiza cómo tu núcleo se convierte en acero.",
-          s:4,r:"60s",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-PlanchaResistencia"
-        },
+
+        {n:"Press Pecho Plano",d:"Peso moderado, 4s negativa. Resistencia muscular.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
+
+        {n:"Remo con Barra",d:"Tempo controlado. Cada rep con máxima contracción.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
+
+        {n:"Press Militar",d:"Rango completo de movimiento. Hombros estables.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
+
+        {n:"Jalón Polea",d:"Contracción 2s en la bajada. Extensión completa arriba.",s:3,r:"18",t:"medio",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+
+        {n:"Curl Bíceps",d:"Isométrico 2s en la cima. Resistencia total.",s:3,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
+
+        {n:"Plancha Abdominal",d:"Cuerpo recto como tabla. Respira profundo y aguanta.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
+
       ],
+
       casa:[
-        {
-          n:"Flexiones",
-          d:"TÉCNICA ALPHA: Tempo 3-1-3 (3s bajada, 1s pausa abajo, 3s subida). Lento y controlado. Siente cómo cada fibra del pectoral trabaja bajo tensión permanente. Mantén la forma perfecta.",
-          s:4,r:"15",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-FlexionesCasa"
-        },
-        {
-          n:"Fondos Paralelas",
-          d:"TÉCNICA ALPHA: Usa dos sillas estables. Rango completo: baja lento sintiendo el estiramiento en el tríceps, sube explosivo y aprieta arriba. Mantén el torso vertical para enfocar el tríceps.",
-          s:4,r:"15",t:"medio",
-          img:"https://rebrand.ly/HOLO-FIT-FondosSillasCasa"
-        },
-        {
-          n:"Dominadas",
-          d:"TÉCNICA ALPHA: Agarre prono y ancho. Extensión completa abajo. Tira de los codos hacia abajo y atrás para subir. Si no puedes, usa una banda elástica o haz dominadas negativas (sube con salto, baja muy lento).",
-          s:3,r:"10",t:"largo",
-          img:"https://rebrand.ly/HOLO-FIT-TironVerticalCasa" // Imagen de tracción reutilizada
-        },
-        {
-          n:"Escaladores",
-          d:"TÉCNICA ALPHA: Ritmo constante y controlado (no rápido). Concéntrate en mantener el abdomen en contracción permanente. La espalda debe permanecer plana y la cadera baja.",
-          s:4,r:"45s",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-EscaladoresGrasaCasa"
-        },
-        {
-          n:"Plancha Abdominal",
-          d:"TÉCNICA ALPHA: Posición de tabla sobre codos. Cuerpo alineado. Aprieta absolutamente todo: glúteos, abdomen, espalda baja. Imagina que eres una viga de acero. Respira con calma y aguanta.",
-          s:4,r:"60s",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-PlanchaResistencia"
-        },
-        {
-          n:"Paso de Oso",
-          d:"TÉCNICA ALPHA: Lento y controlado. Rodillas a 2cm del suelo. Concéntrate en la estabilidad del núcleo y la coordinación de movimientos. Siente cómo el core blindado soporta cada paso.",
-          s:3,r:"8m",t:"corto",
-          img:"https://rebrand.ly/HOLO-FIT-PasoOsoCasa"
-        },
-      ]
-    }
-  },
-  // ... resto de grupos musculares (inferior, descanso) ...
-};
-  },
-  descanso:{
-    Musculo:{
-      meta:"Recuperación Activa",intensidad:"Baja",tipo:"Movilidad",avatar:"🧘",
-      gym:[
-        {n:"Plancha Abdominal",d:"Mantén la alineación. Respira profundo. Mindfulness muscular.",s:3,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-        {n:"Paso de Oso",d:"Muy lento. Movilidad de cadera y hombros activa.",s:3,r:"10m",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-      ],
-      casa:[
-        {n:"Plancha Abdominal",d:"Mantén la alineación. Respira profundo. Mindfulness muscular.",s:3,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-        {n:"Paso de Oso",d:"Muy lento. Movilidad activa de cadera y hombros.",s:3,r:"10m",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-      ]
-    },
-    Grasa:{
-      meta:"Recuperación Activa",intensidad:"Baja",tipo:"Cardio Suave",avatar:"🧘",
-      gym:[
-        {n:"Jumping Jacks",d:"Ritmo suave. Solo para mantener el metabolismo activo.",s:3,r:"30s",t:"corto",img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=500"},
-        {n:"Escaladores",d:"Muy lento. Solo movilidad. Sin esfuerzo máximo.",s:3,r:"30s",t:"corto",img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500"},
-      ],
-      casa:[
-        {n:"Jumping Jacks",d:"Ritmo suave. Cardio regenerativo. Activa sin agotar.",s:3,r:"30s",t:"corto",img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=500"},
-        {n:"Escaladores",d:"Muy lento. Solo movilidad. Recuperación activa.",s:3,r:"30s",t:"corto",img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500"},
-      ]
-    },
-    Resistencia:{
-      meta:"Recuperación Activa",intensidad:"Baja",tipo:"Movilidad",avatar:"🧘",
-      gym:[
-        {n:"Plancha Abdominal",d:"Respira y relaja. El descanso es parte del entrenamiento.",s:3,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-        {n:"Paso de Oso",d:"Movimiento lento y consciente. Recupera tu cuerpo.",s:3,r:"8m",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-      ],
-      casa:[
-        {n:"Plancha Abdominal",d:"Respira y relaja. El descanso es parte del entrenamiento.",s:3,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-        {n:"Paso de Oso",d:"Movimiento lento y consciente. Recupera tu cuerpo.",s:3,r:"8m",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+
+        {n:"Flexiones",d:"Tempo 3-1-3. Lento y controlado. Siente cada fibra.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
+
+        {n:"Fondos Paralelas",d:"Rango completo. Baja lento, sube explosivo.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
+
+        {n:"Dominadas",d:"Agarre prono, extensión completa. Si no puedes, usa banda.",s:3,r:"10",t:"largo",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
+
+        {n:"Escaladores",d:"Ritmo constante 30s. Core en contracción permanente.",s:4,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500"},
+
+        {n:"Plancha Abdominal",d:"Aprieta todo: glúteos, abs, espalda. Cuerpo como tabla.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
+
+        {n:"Paso de Oso",d:"Lento y controlado. Siente el core en cada paso.",s:3,r:"8m",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
+
       ]
     }
   }
