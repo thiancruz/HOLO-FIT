@@ -436,110 +436,156 @@ function planIdx(dayJS){ return dayJS===0?6:dayJS-1; }
 
 /* ─── RUTINAS DETALLADAS ─── */
 const RUTINAS={
-{n:"Press Pecho Plano",d:"Agarre a 1.5x ancho de hombros. Baja hasta tocar el pecho, empuja explosivo.",s:4,r:"10",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-
+  superior:{
+    Musculo:{
+      meta:"Hipertrofia Superior",intensidad:"Alta",tipo:"Fuerza",avatar:"🦁",
+      gym:[
+        {n:"Press Pecho Plano",d:"Agarre a 1.5x ancho de hombros. Baja hasta tocar el pecho, empuja explosivo.",s:4,r:"10",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
         {n:"Press Inclinado",d:"45° de inclinación. Siente el pecho superior trabajar en cada repetición.",s:3,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=500"},
-
         {n:"Remo con Barra",d:"Espalda plana, codos pegados al cuerpo. Contrae escápulas en la cima.",s:4,r:"10",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
-
         {n:"Press Militar",d:"Core apretado, barra pasa frente a la cara. No hiperextiendas la espalda.",s:3,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-
         {n:"Curl Bíceps",d:"Codos fijos, tensión constante. No balancees el torso para trampear.",s:3,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-
         {n:"Extensión Tríceps",d:"Tríceps bajo tensión completa. Baja lento, extiende hasta bloquear.",s:3,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-
       ],
-
       casa:[
-
         {n:"Flexiones",d:"Cuerpo recto como tabla. Toca el pecho al suelo, empuja explosivo.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-
         {n:"Flexión Diamante",d:"Manos juntas formando diamante. Trabaja el tríceps al máximo.",s:3,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=500"},
-
         {n:"Fondos Paralelas",d:"Usa dos sillas. Baja 90° codos atrás, no afuera.",s:4,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
-
         {n:"Empuje Alpha",d:"Manos elevadas. Énfasis en la porción superior del pecho.",s:3,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-
         {n:"Tirón Vertical",d:"Usa la barra de dominadas o la puerta. Concentra los dorsales.",s:3,r:"10",t:"largo",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-
         {n:"Paso de Oso",d:"Rodillas al ras del suelo, avanza con control. Core siempre firme.",s:3,r:"10m",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-
       ]
-
     },
-
     Grasa:{
-
       meta:"Quema Superior HIIT",intensidad:"Muy Alta",tipo:"HIIT",avatar:"🔥",
-
       gym:[
-
         {n:"Press Pecho Plano",d:"Peso ligero, ritmo rápido. Máximas reps en el tiempo.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-
         {n:"Remo con Barra",d:"Movimiento explosivo. No descanses entre series.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
-
         {n:"Press Militar",d:"Empuja la barra al máximo, baja controlado.",s:4,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-
         {n:"Jalón Polea",d:"Agarre ancho, contrae dorsales. Velocidad controlada.",s:4,r:"18",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-
         {n:"Elevaciones Laterales",d:"Peso ligero, movimiento continuo. Hombros en llamas.",s:3,r:"25",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-
         {n:"Escaladores",d:"Máxima velocidad. Rodillas al pecho, Core firme.",s:4,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-
       ],
-
       casa:[
-
         {n:"Burpees Infierno",d:"Pecho al suelo, salta con los brazos arriba. Sin parar.",s:5,r:"12",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-
         {n:"Flexiones",d:"Pecho al suelo. Ritmo rápido. Máximo esfuerzo.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-
         {n:"Escaladores",d:"Core en fuego. Rodillas al pecho lo más rápido posible.",s:4,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500"},
-
         {n:"Fondos Paralelas",d:"Dos sillas. Ritmo explosivo. Tríceps al límite.",s:4,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-
         {n:"Jumping Jacks",d:"Mantén el ritmo cardíaco alto durante toda la serie.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=500"},
-
         {n:"Sprint Estático",d:"Rodillas al máximo, corre en el sitio. ¡Quema todo!",s:4,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
-
       ]
-
     },
-
     Resistencia:{
-
       meta:"Resistencia Superior",intensidad:"Media-Alta",tipo:"Funcional",avatar:"⚡",
-
       gym:[
-
         {n:"Press Pecho Plano",d:"Peso moderado, 4s negativa. Resistencia muscular.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-
         {n:"Remo con Barra",d:"Tempo controlado. Cada rep con máxima contracción.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
-
         {n:"Press Militar",d:"Rango completo de movimiento. Hombros estables.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-
         {n:"Jalón Polea",d:"Contracción 2s en la bajada. Extensión completa arriba.",s:3,r:"18",t:"medio",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-
         {n:"Curl Bíceps",d:"Isométrico 2s en la cima. Resistencia total.",s:3,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-
         {n:"Plancha Abdominal",d:"Cuerpo recto como tabla. Respira profundo y aguanta.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-
       ],
-
       casa:[
-
         {n:"Flexiones",d:"Tempo 3-1-3. Lento y controlado. Siente cada fibra.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-
         {n:"Fondos Paralelas",d:"Rango completo. Baja lento, sube explosivo.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
-
         {n:"Dominadas",d:"Agarre prono, extensión completa. Si no puedes, usa banda.",s:3,r:"10",t:"largo",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-
         {n:"Escaladores",d:"Ritmo constante 30s. Core en contracción permanente.",s:4,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500"},
-
         {n:"Plancha Abdominal",d:"Aprieta todo: glúteos, abs, espalda. Cuerpo como tabla.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-
         {n:"Paso de Oso",d:"Lento y controlado. Siente el core en cada paso.",s:3,r:"8m",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-
+      ]
+    }
+  },
+  inferior:{
+    Musculo:{
+      meta:"Hipertrofia Inferior",intensidad:"Alta",tipo:"Fuerza",avatar:"🦁",
+      gym:[
+        {n:"Sentadilla Libre",d:"Quiebra el paralelo. Peso en los talones. Explosión hacia arriba.",s:4,r:"10",t:"largo",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
+        {n:"Peso Muerto Rumano",d:"Espalda neutral, siente el estiramiento de los isquios.",s:4,r:"10",t:"largo",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
+        {n:"Prensa de Pierna",d:"Pies a ancho de hombros. No bloquees las rodillas.",s:4,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
+        {n:"Hip Thrust",d:"Barra sobre las caderas. Aprieta glúteos 2s arriba.",s:4,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+        {n:"Extensión Cuádriceps",d:"Contracción máxima en la cima. Baja lento.",s:3,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
+        {n:"Pantorrillas",d:"Rango completo de movimiento. Pausa 1s arriba y 1s abajo.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
+      ],
+      casa:[
+        {n:"Sentadilla Goblet",d:"Usa mochila con peso. Quiebra el paralelo siempre.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
+        {n:"Hip Thrust",d:"Usa el sofá o cama. Empuja la pelvis hacia arriba. Aprieta.",s:4,r:"20",t:"medio",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+        {n:"Zancadas",d:"Paso largo, rodilla delantera no sobrepasa el pie.",s:4,r:"12/lado",t:"medio",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
+        {n:"Peso Muerto",d:"Espalda recta, tira desde los talones. Isquios al límite.",s:4,r:"15",t:"largo",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
+        {n:"Elevaciones de Cadera",d:"Rodillas dobladas, eleva la pelvis. Aprieta glúteos arriba.",s:4,r:"25",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
+        {n:"Pantorrillas",d:"Punta de pie en escalón. Rango completo. Sin rebotar.",s:4,r:"25",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
+      ]
+    },
+    Grasa:{
+      meta:"Quema Inferior HIIT",intensidad:"Muy Alta",tipo:"HIIT",avatar:"🔥",
+      gym:[
+        {n:"Senta-Salto",d:"Baja a sentadilla profunda, salta con las manos al cielo.",s:5,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
+        {n:"Hip Thrust",d:"Explosión de cadera. Peso moderado, máxima velocidad.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+        {n:"Prensa de Pierna",d:"Ritmo rápido. 20 reps sin parar. Cardio + fuerza.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
+        {n:"Zancadas",d:"Alterna piernas sin parar. Ritmo de carrera.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
+        {n:"Sprint Estático",d:"Rodillas al máximo. 45 segundos explosivos.",s:5,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
+        {n:"Jumping Jacks",d:"60 segundos continuos. Mantén el ritmo cardíaco en zona de quema.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=500"},
+      ],
+      casa:[
+        {n:"Senta-Salto",d:"Baja profundo, salta lo más alto posible. Aterriza suave.",s:5,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
+        {n:"Sentadilla Sumo",d:"Pies abiertos, punta de pies 45°. Glúteos y aductores.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
+        {n:"Hip Thrust",d:"Usa el sofá. Máxima velocidad. Quema esos glúteos.",s:4,r:"25",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+        {n:"Zancada Reversa",d:"Paso hacia atrás. Alterna piernas sin parar.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
+        {n:"Sprint Estático",d:"Máxima velocidad. Rodillas arriba. ¡Sin excusas!",s:5,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
+        {n:"Jumping Jacks",d:"Cardio continuo. Mantén la frecuencia cardíaca alta.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=500"},
+      ]
+    },
+    Resistencia:{
+      meta:"Resistencia Inferior",intensidad:"Media-Alta",tipo:"Funcional",avatar:"⚡",
+      gym:[
+        {n:"Sentadilla Libre",d:"Peso moderado, 4s negativa. Resistencia de cuádriceps.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
+        {n:"Peso Muerto Rumano",d:"Cada rep con contracción de isquios. Lento y poderoso.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
+        {n:"Hip Thrust",d:"Mantén la contracción arriba 3s. Glúteos de acero.",s:4,r:"20",t:"medio",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+        {n:"Sentadilla Isométrica",d:"Apóyate en la pared a 90°. Aguanta y respira profundo.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
+        {n:"Zancadas",d:"Paso largo y controlado. Equilibrio en cada repetición.",s:4,r:"12/lado",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
+        {n:"Pantorrillas",d:"Rango completo. Aguanta 1s arriba. Resistencia de gemelos.",s:4,r:"25",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
+      ],
+      casa:[
+        {n:"Sentadilla Goblet",d:"Mochila con peso. 4s bajando. Resistencia muscular.",s:4,r:"20",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
+        {n:"Hip Thrust",d:"Contracción 3s en la cima. Isquios y glúteos activos.",s:4,r:"25",t:"medio",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+        {n:"Sentadilla Isométrica",d:"Pared a 90°. Respira profundo. Aguanta el tiempo.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
+        {n:"Zancada Reversa",d:"Controlado y balanceado. Core activo todo el tiempo.",s:4,r:"15/lado",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
+        {n:"Elevaciones de Cadera",d:"Glúteos en contracción permanente. Sin bajar del todo.",s:4,r:"30",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
+        {n:"Pantorrillas",d:"Talón en el suelo, punta arriba. Rango total. Quema.",s:4,r:"30",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
+      ]
+    }
+  },
+  descanso:{
+    Musculo:{
+      meta:"Recuperación Activa",intensidad:"Baja",tipo:"Movilidad",avatar:"🧘",
+      gym:[
+        {n:"Plancha Abdominal",d:"Mantén la alineación. Respira profundo. Mindfulness muscular.",s:3,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
+        {n:"Paso de Oso",d:"Muy lento. Movilidad de cadera y hombros activa.",s:3,r:"10m",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+      ],
+      casa:[
+        {n:"Plancha Abdominal",d:"Mantén la alineación. Respira profundo. Mindfulness muscular.",s:3,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
+        {n:"Paso de Oso",d:"Muy lento. Movilidad activa de cadera y hombros.",s:3,r:"10m",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+      ]
+    },
+    Grasa:{
+      meta:"Recuperación Activa",intensidad:"Baja",tipo:"Cardio Suave",avatar:"🧘",
+      gym:[
+        {n:"Jumping Jacks",d:"Ritmo suave. Solo para mantener el metabolismo activo.",s:3,r:"30s",t:"corto",img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=500"},
+        {n:"Escaladores",d:"Muy lento. Solo movilidad. Sin esfuerzo máximo.",s:3,r:"30s",t:"corto",img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500"},
+      ],
+      casa:[
+        {n:"Jumping Jacks",d:"Ritmo suave. Cardio regenerativo. Activa sin agotar.",s:3,r:"30s",t:"corto",img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=500"},
+        {n:"Escaladores",d:"Muy lento. Solo movilidad. Recuperación activa.",s:3,r:"30s",t:"corto",img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500"},
+      ]
+    },
+    Resistencia:{
+      meta:"Recuperación Activa",intensidad:"Baja",tipo:"Movilidad",avatar:"🧘",
+      gym:[
+        {n:"Plancha Abdominal",d:"Respira y relaja. El descanso es parte del entrenamiento.",s:3,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
+        {n:"Paso de Oso",d:"Movimiento lento y consciente. Recupera tu cuerpo.",s:3,r:"8m",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
+      ],
+      casa:[
+        {n:"Plancha Abdominal",d:"Respira y relaja. El descanso es parte del entrenamiento.",s:3,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
+        {n:"Paso de Oso",d:"Movimiento lento y consciente. Recupera tu cuerpo.",s:3,r:"8m",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
       ]
     }
   }
