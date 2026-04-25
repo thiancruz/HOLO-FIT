@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HOLO-FIT | Alpha Trainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -11,178 +13,160 @@
   --surface2:#0f172a;--border:#1e293b;--border2:#334155;
   --text:#e2e8f0;--muted:#64748b;--sub:#94a3b8;
   --green:#22c55e;--red:#ef4444;--amber:#f59e0b;
+  /* Nueva variable para suavizado */
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* ─── RESET & BASE ─── */
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Barlow Condensed',sans-serif;min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(56,189,248,.08),transparent),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(99,102,241,.06),transparent);pointer-events:none;z-index:0}
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Barlow Condensed',sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+    /* Mejora de renderizado de texto */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
-/* ─── SCROLLBAR ─── */
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#1e293b;border-radius:4px}
+body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(56,189,248,.12),transparent),
+               radial-gradient(ellipse 60% 40% at 80% 80%,rgba(99,102,241,.08),transparent);
+    pointer-events:none;
+    z-index:0;
+}
+
+/* ─── SCROLLBAR (Mejorado para invisibilidad estética) ─── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--sky)}
 
 /* ─── UTIL ─── */
 .hidden{display:none!important}
-.holo-card{background:rgba(11,20,38,.85);border:1px solid rgba(56,189,248,.15);backdrop-filter:blur(16px)}
-.btn-primary{background:linear-gradient(90deg,var(--sky),var(--indigo));border:none;color:#fff;cursor:pointer;transition:all .25s;font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:.05em;text-transform:uppercase}
-.btn-primary:hover{filter:brightness(1.15);transform:translateY(-1px);box-shadow:0 8px 24px rgba(56,189,248,.3)}
-.btn-primary:active{transform:scale(.97)}
-.btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;filter:none}
+.holo-card{
+    background:rgba(11,20,38,.7);
+    border:1px solid rgba(56,189,248,.15);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px); /* Soporte Safari */
+}
 
-/* ─── INPUTS ─── */
-input,select{background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:12px;padding:14px 16px;width:100%;font-size:16px;font-family:'Barlow Condensed',sans-serif;font-weight:700;outline:none;transition:border-color .2s,box-shadow .2s;letter-spacing:.03em}
-input:focus,select:focus{border-color:var(--sky);box-shadow:0 0 0 3px rgba(56,189,248,.12)}
-input::placeholder{color:var(--muted);font-weight:400}
-select option{background:var(--surface2)}
-label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:6px}
+/* Botón Mejorado con efecto Glow */
+.btn-primary{
+    background:linear-gradient(90deg,var(--sky),var(--indigo));
+    border:none;
+    color:#fff;
+    cursor:pointer;
+    transition: var(--transition);
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:900;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    position: relative;
+    overflow: hidden;
+}
+.btn-primary:hover{
+    filter:brightness(1.1);
+    transform:translateY(-2px);
+    box-shadow:0 0 20px rgba(56,189,248,.4);
+}
 
-/* ─── MODAL ENCUESTA ─── */
-#modal-encuesta{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
-.survey-card{padding:40px 36px;border-radius:32px;width:100%;max-width:440px;border:2px solid rgba(56,189,248,.2);position:relative;overflow:hidden}
-.survey-card::before{content:'HOLO';position:absolute;top:-20px;right:-10px;font-size:120px;font-weight:900;font-style:italic;color:rgba(56,189,248,.04);pointer-events:none;line-height:1}
-.survey-title{font-size:42px;font-weight:900;font-style:italic;color:var(--sky);line-height:1;margin-bottom:4px;letter-spacing:-.02em}
-.survey-sub{font-size:13px;color:var(--sub);margin-bottom:32px;font-weight:400;letter-spacing:.03em}
-.form-row{display:flex;flex-direction:column;gap:16px}
-.form-group{display:flex;flex-direction:column}
+/* ─── MODAL ENCUESTA (Mejora de UX) ─── */
+#modal-encuesta{
+    position:fixed;
+    inset:0;
+    background: radial-gradient(circle at center, rgba(15, 23, 42, 0.9) 0%, var(--bg) 100%);
+    z-index:300;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    overflow-y:auto;
+}
 
-/* Selector de tarjetas */
-.card-selector{display:flex;gap:10px;flex-wrap:wrap}
-.card-opt{flex:1;min-width:80px;padding:14px 10px;border-radius:14px;border:2px solid var(--border2);background:var(--surface2);cursor:pointer;text-align:center;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:4px}
-.card-opt:hover{border-color:rgba(56,189,248,.4)}
-.card-opt.selected{border-color:var(--sky);background:rgba(56,189,248,.1);box-shadow:0 0 20px rgba(56,189,248,.15)}
-.card-opt .opt-icon{font-size:28px;line-height:1}
-.card-opt .opt-label{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--sub)}
-.card-opt.selected .opt-label{color:var(--sky)}
+.survey-card{
+    padding:40px 36px;
+    border-radius:32px;
+    width:100%;
+    max-width:440px;
+    border:1px solid rgba(56,189,248,.3);
+    position:relative;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+}
+
+/* ─── INPUTS & SELECTORS ─── */
+input, select {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    border-radius: 12px;
+    padding: 14px 16px;
+    transition: var(--transition);
+}
+input:focus {
+    border-color: var(--sky);
+    background: var(--surface);
+}
+
+.card-opt {
+    user-select: none; /* Evita selección de texto al hacer click rápido */
+    transition: var(--transition);
+}
 
 /* ─── DASHBOARD ─── */
-#main-dashboard{padding:20px;max-width:600px;margin:0 auto;padding-bottom:140px;position:relative;z-index:1}
+#main-dashboard{
+    padding:20px;
+    max-width:600px;
+    margin:0 auto;
+    padding-bottom:140px;
+    position:relative;
+    z-index:1;
+    animation: fadeIn 0.8s ease-out;
+}
 
-/* Header */
-.header-wrap{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px}
-.brand{font-size:32px;font-weight:900;font-style:italic;color:var(--sky);letter-spacing:-.03em;line-height:1}
-.brand span{color:#fff}
-.racha-block{text-align:right}
-.racha-num{font-size:30px;font-weight:900;font-style:italic;color:var(--red);line-height:1}
-.racha-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.12em;font-family:'JetBrains Mono',monospace}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-/* Week nav */
-.week-nav{display:flex;gap:5px;margin-bottom:24px}
-.day-btn{flex:1;padding:10px 4px;border-radius:14px;border:1px solid var(--border);text-align:center;font-size:9px;font-weight:700;text-transform:uppercase;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .2s;font-family:'JetBrains Mono',monospace;letter-spacing:.04em;background:transparent}
-.day-btn:hover{border-color:rgba(56,189,248,.3);color:var(--sub)}
-.day-btn.active{border-color:var(--sky);background:rgba(56,189,248,.1);color:var(--sky)}
-.day-btn.done{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.08);color:#f87171}
-.day-dot{font-size:16px;line-height:1}
+/* Mejora de Tarjetas de Ejercicio */
+.exercise-card {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+    transition: var(--transition);
+}
+.exercise-card:hover {
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(15, 23, 42, 0.6);
+}
 
-/* Hero block */
-.hero-block{display:flex;flex-direction:column;align-items:center;margin-bottom:24px;text-align:center}
-.avatar-outer{position:relative;width:100px;height:100px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
-.avatar-ring1,.avatar-ring2{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(56,189,248,.2);animation:ring-pulse 3s ease-in-out infinite}
-.avatar-ring2{inset:-8px;border-color:rgba(99,102,241,.12);animation-delay:1.5s}
-@keyframes ring-pulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.8;transform:scale(1.05)}}
-#avatar-emoji{font-size:56px;line-height:1}
-.day-type-badge{display:inline-block;padding:4px 14px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
-.badge-superior{background:rgba(56,189,248,.15);color:var(--sky);border:1px solid rgba(56,189,248,.3)}
-.badge-inferior{background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3)}
-.badge-full{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
-.badge-descanso{background:rgba(100,116,139,.12);color:var(--sub);border:1px solid var(--border2)}
-#view-day-name{font-size:24px;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:-.01em;line-height:1}
-#lugar-tag{font-size:10px;color:var(--sky);font-weight:700;text-transform:uppercase;margin-top:4px;letter-spacing:.1em;font-family:'JetBrains Mono',monospace}
-.stats-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center}
-.stat-pill{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;text-align:center;min-width:70px}
-.stat-pill .sv{font-size:16px;font-weight:900;color:var(--text);font-family:'JetBrains Mono',monospace;display:block;line-height:1.2}
-.stat-pill .sl{font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.1em}
+/* ─── TIMER OVERLAY (Mejora visual) ─── */
+#timer-overlay{
+    backdrop-filter: blur(10px);
+    background: rgba(2, 6, 23, 0.9);
+}
 
-/* Progress */
-.progress-wrap{margin-bottom:20px}
-.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.progress-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-family:'JetBrains Mono',monospace}
-#progress-label{font-size:11px;color:var(--sky);font-weight:700;font-family:'JetBrains Mono',monospace}
-.progress-track{background:var(--border);border-radius:999px;height:8px;overflow:hidden}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--sky),var(--indigo));border-radius:999px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+#timer-number {
+    text-shadow: 0 0 20px rgba(56,189,248,0.5);
+}
 
-/* Exercise cards */
-#ejercicios-list{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
-.exercise-card{transition:all .3s;cursor:pointer;border-radius:20px;overflow:hidden}
-.exercise-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4)}
-.ex-header{display:flex;align-items:center;padding:16px;gap:10px}
-.check-btn{width:30px;height:30px;border-radius:50%;border:2px solid var(--sky);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0;font-size:14px;color:transparent}
-.check-btn.done{background:var(--green);border-color:var(--green);color:#fff}
-.check-btn:hover{transform:scale(1.15);box-shadow:0 0 12px rgba(56,189,248,.4)}
-.ex-info{flex:1;min-width:0}
-.ex-name{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.03em;line-height:1.2}
-.ex-muscle{font-size:10px;color:var(--muted);margin-top:2px;font-family:'JetBrains Mono',monospace}
-.ex-meta{text-align:right;flex-shrink:0}
-.ex-sets{font-size:16px;font-weight:900;color:var(--sky);line-height:1}
-.ex-sets-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;font-family:'JetBrains Mono',monospace}
-.ex-arrow{color:var(--border2);font-size:12px;margin-left:6px;transition:transform .3s;flex-shrink:0}
-.exercise-card.active .ex-arrow{transform:rotate(180deg)}
-
-.exercise-detail{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.4,0,.2,1)}
-.exercise-card.active .exercise-detail{max-height:800px}
-.ex-detail-inner{padding:0 16px 16px}
-.ex-img{width:100%;height:150px;object-fit:cover;border-radius:14px;margin-bottom:12px;display:block}
-.edu-tip{background:rgba(56,189,248,.07);border-left:3px solid var(--sky);border-radius:0 10px 10px 0;padding:10px 14px;font-size:12px;line-height:1.65;color:var(--sub);margin-bottom:12px}
-.edu-tip strong{color:var(--sky);font-weight:900}
-.series-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.series-lbl{font-size:11px;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-family:'JetBrains Mono',monospace}
-.timer-btn{background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.3);color:var(--sky);padding:6px 14px;border-radius:10px;font-size:11px;font-weight:900;cursor:pointer;transition:all .2s;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.05em}
-.timer-btn:hover{background:rgba(56,189,248,.2)}
-.dots-row{display:flex;gap:8px;flex-wrap:wrap}
-.set-dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--border2);background:transparent;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent}
-.set-dot.done{background:var(--indigo);border-color:var(--indigo);color:#fff}
-.set-dot:hover{transform:scale(1.2);border-color:var(--sky)}
-
-/* ─── TIMER OVERLAY ─── */
-#timer-overlay{position:fixed;inset:0;background:rgba(2,6,23,.97);z-index:350;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s}
-#timer-overlay.show{opacity:1;pointer-events:all}
-.timer-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.15em;margin-bottom:28px;font-family:'JetBrains Mono',monospace}
-.timer-circle{position:relative;width:220px;height:220px;margin-bottom:24px}
-.timer-svg{transform:rotate(-90deg)}
-#timer-progress{transition:stroke-dashoffset 1s linear;stroke-linecap:round;filter:drop-shadow(0 0 12px rgba(56,189,248,.5))}
-#timer-number{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:76px;font-weight:900;font-style:italic;color:var(--sky);font-family:'Barlow Condensed',sans-serif}
-#timer-ex-name{font-size:14px;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-family:'JetBrains Mono',monospace;margin-bottom:28px;text-align:center;padding:0 20px}
-.timer-next-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-family:'JetBrains Mono',monospace;margin-bottom:6px}
-.timer-next-ex{font-size:18px;font-weight:900;color:var(--text);text-transform:uppercase;margin-bottom:28px;text-align:center}
-.skip-btn{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:10px 28px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em;transition:all .2s;text-transform:uppercase}
-.skip-btn:hover{border-color:var(--sub);color:var(--sub)}
-
-/* ─── MODAL CELEBRACIÓN ─── */
-#modal-celebracion{position:fixed;inset:0;background:rgba(2,6,23,.94);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .4s}
-#modal-celebracion.show{opacity:1;pointer-events:all}
-.confetti-wrap{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.confetti-piece{position:absolute;top:-16px;animation:fall linear forwards}
-@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
-.cel-card{padding:40px;border-radius:32px;max-width:400px;width:100%;text-align:center;border:2px solid rgba(99,102,241,.3);position:relative;z-index:1;overflow:hidden}
-.cel-card::before{content:'✓';position:absolute;bottom:-20px;right:-10px;font-size:160px;font-weight:900;color:rgba(99,102,241,.06);pointer-events:none;line-height:1}
-.cel-avatar{font-size:72px;margin-bottom:12px;display:block}
-.cel-title{font-size:32px;font-weight:900;font-style:italic;color:var(--sky);margin-bottom:8px;letter-spacing:-.02em}
-.cel-frase{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:20px;font-weight:400}
-.cel-racha-box{background:var(--surface2);border-radius:16px;padding:16px;margin-bottom:20px;border:1px solid var(--border)}
-.cel-racha-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.12em;font-family:'JetBrains Mono',monospace;margin-bottom:4px}
-#cel-racha{font-size:48px;font-weight:900;font-style:italic;color:var(--red);line-height:1}
-.cel-edu{background:rgba(56,189,248,.07);border-radius:14px;padding:14px;margin-bottom:24px;text-align:left;font-size:12px;color:var(--sub);line-height:1.65;border:1px solid rgba(56,189,248,.1)}
-
-/* ─── FINALIZAR BTN ─── */
-#btn-finalizar{width:100%;padding:20px;border-radius:20px;font-size:17px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;box-shadow:0 8px 40px rgba(14,165,233,.2);font-family:'Barlow Condensed',sans-serif}
-#btn-finalizar.btn-completed{background:linear-gradient(90deg,#ef4444,#991b1b)!important}
-
-/* ─── DESCANSO indicator ─── */
-.descanso-tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-family:'JetBrains Mono',monospace}
-.descanso-corto{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.2)}
-.descanso-medio{background:rgba(245,158,11,.1);color:#fcd34d;border:1px solid rgba(245,158,11,.2)}
-.descanso-largo{background:rgba(34,197,94,.1);color:#86efac;border:1px solid rgba(34,197,94,.2)}
-
-/* ─── ANIMATIONS ─── */
-@keyframes slide-up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.exercise-card{animation:slide-up .3s ease both}
-
-/* ─── NOTIF ─── */
-.notif{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);z-index:500;background:rgba(11,20,38,.95);border:1px solid rgba(56,189,248,.3);border-radius:14px;padding:12px 24px;font-size:14px;font-weight:700;color:var(--sky);transition:transform .3s cubic-bezier(.4,0,.2,1);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;backdrop-filter:blur(12px)}
-.notif.show{transform:translateX(-50%) translateY(0)}
+/* ─── RESPONSIVIDAD ─── */
+@media (max-width: 480px) {
+    .survey-title { font-size: 32px; }
+    .survey-card { padding: 24px; }
+    .card-opt { min-width: 70px; padding: 10px 5px; }
+    .brand { font-size: 26px; }
+}
 </style>
 </head>
 <body>
 
-<!-- ══ MODAL INICIAL ══ -->
 <div id="modal-encuesta">
   <div class="holo-card survey-card">
     <div class="survey-title">HOLO<span>-FIT</span></div>
@@ -250,7 +234,6 @@ label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase
   </div>
 </div>
 
-<!-- ══ DASHBOARD ══ -->
 <div id="main-dashboard" class="hidden">
   <header class="header-wrap">
     <div>
@@ -296,7 +279,6 @@ label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase
   </button>
 </div>
 
-<!-- ══ TIMER ══ -->
 <div id="timer-overlay">
   <div class="timer-lbl">⏱ Descanso activo</div>
   <div class="timer-circle">
@@ -314,7 +296,6 @@ label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase
   <button onclick="cancelarTimer()" class="skip-btn">Saltar descanso ↗</button>
 </div>
 
-<!-- ══ CELEBRACIÓN ══ -->
 <div id="modal-celebracion">
   <div class="confetti-wrap" id="confetti-wrap"></div>
   <div class="holo-card cel-card">
@@ -330,624 +311,7 @@ label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase
   </div>
 </div>
 
-<!-- ══ NOTIFICACIÓN ══ -->
 <div class="notif" id="notif"></div>
 
-<script>
-/* ═══════════════════════════════════════
-   DATOS
-═══════════════════════════════════════ */
-const FRASES=[
-  "¡Nivel Alpha alcanzado! El tigre ruge hoy.",
-  "Dolor es debilidad saliendo del cuerpo. ¡Bien hecho!",
-  "Un día más cerca de tu mejor versión.",
-  "¡Bestial! Los límites son solamente mentales.",
-  "Misión cumplida. Tu disciplina es tu superpoder.",
-  "Champions no nacen, se forjan. Hoy te forjaste.",
-  "La constancia vence al talento cuando el talento no es constante."
-];
-const EDU_TIPS=[
-  "💡 El músculo crece durante el <strong style='color:var(--sky)'>descanso</strong>, no durante el entrenamiento. Duerme 7-9 horas para maximizar ganancias.",
-  "🧠 La conexión <strong style='color:var(--sky)'>mente-músculo</strong> es real: concentrarte en el músculo trabajado aumenta su activación hasta un 22%.",
-  "⚡ La proteína <strong style='color:var(--sky)'>post-entrenamiento</strong> en los primeros 30-60 min acelera la síntesis muscular.",
-  "🔥 El HIIT quema grasa <strong style='color:var(--sky)'>48h después</strong> del ejercicio gracias al efecto EPOC.",
-  "💧 Una deshidratación del <strong style='color:var(--sky)'>2%</strong> reduce el rendimiento físico hasta un 20%. ¡Hidrátate!",
-  "🏃 Calentar 5-10 min <strong style='color:var(--sky)'>reduce el riesgo de lesión</strong> en más del 40%.",
-  "💤 <strong style='color:var(--sky)'>El sueño profundo</strong> libera hormona de crecimiento. Sin sueño, sin músculo."
-];
-
-/* Grupos musculares */
-const MUSCULOS={
-  "Press Pecho Plano":"Pecho mayor · Tríceps · Deltoides ant.",
-  "Press Inclinado":"Pecho superior · Deltoides · Tríceps",
-  "Aperturas Pecho":"Pecho mayor · Bíceps corto",
-  "Press Militar":"Deltoides · Tríceps · Trapecio",
-  "Elevaciones Laterales":"Deltoides medial · Trapecio",
-  "Remo con Barra":"Dorsales · Bíceps · Romboides",
-  "Jalón Polea":"Dorsales · Bíceps · Teres mayor",
-  "Curl Bíceps":"Bíceps braquial · Braquiorradial",
-  "Extensión Tríceps":"Tríceps largo · Cabeza lateral",
-  "Fondos Paralelas":"Tríceps · Pecho · Deltoides",
-  "Sentadilla Libre":"Cuádriceps · Glúteos · Isquios · Core",
-  "Prensa de Pierna":"Cuádriceps · Glúteos · Aductores",
-  "Extensión Cuádriceps":"Cuádriceps · Rótula",
-  "Curl Femoral":"Isquiotibiales · Glúteos",
-  "Hip Thrust":"Glúteos · Isquios · Core",
-  "Zancadas":"Cuádriceps · Glúteos · Core",
-  "Peso Muerto Rumano":"Isquios · Glúteos · Erector espinal",
-  "Pantorrillas":"Gastrocnemio · Sóleo",
-  "Plancha Abdominal":"Recto abdominal · Transverso · Lumbar",
-  "Flexiones":"Pecho · Tríceps · Core",
-  "Dominadas":"Dorsales · Bíceps · Core",
-  "Burpees Infierno":"Cuerpo completo · Cardio",
-  "Escaladores":"Core · Hombros · Cardio",
-  "Jumping Jacks":"Cardio · Aductores · Hombros",
-  "Senta-Salto":"Cuádriceps · Glúteos · Potencia",
-  "Sprint Estático":"Cardio · Cadera · Coordinación",
-  "Elevaciones de Cadera":"Glúteos · Isquios · Core",
-  "Sentadilla Sumo":"Glúteos · Aductores · Cuádriceps",
-  "Patada Glúteo":"Glúteos · Isquios",
-  "Abducción de Cadera":"Glúteo medio · TFL",
-  "Sentadilla Goblet":"Cuádriceps · Glúteos · Core",
-  "Zancada Reversa":"Glúteos · Cuádriceps · Equilibrio",
-  "Peso Muerto":"Isquios · Glúteos · Erector · Trampas",
-  "Empuje Alpha":"Pecho · Hombros · Tríceps",
-  "Tirón Vertical":"Dorsales · Bíceps · Romboides",
-  "Curl de Poder":"Bíceps braquial · Braquiorradial",
-  "Flexión Diamante":"Tríceps · Pecho interno · Deltoides",
-  "Paso de Oso":"Core completo · Hombros · Coordinación",
-  "Sentadilla Isométrica":"Cuádriceps · Estabilidad · Resistencia"
-};
-
-/* ─── Tiempos de descanso por objetivo ─── */
-const DESCANSOS={
-  Musculo:{corto:60,medio:90,largo:120},   // Hipertrofia: descansos medios-largos
-  Grasa:{corto:15,medio:25,largo:30},       // HIIT: descansos mínimos
-  Resistencia:{corto:30,medio:45,largo:60} // Resistencia: descansos moderados
-};
-
-/* ─── DÍAS DE LA SEMANA ─── */
-// 0=DOM,1=LUN,2=MAR,3=MIE,4=JUE,5=VIE,6=SAB
-// GUERRERO: 4 superior + 3 inferior
-// GUERRERA: 3 superior + 4 inferior
-const PLAN_DIAS={
-  HOMBRE:[
-    {tipo:"superior",label:"Tren Superior",badge:"badge-superior"},   // LUN (1)
-    {tipo:"inferior",label:"Tren Inferior",badge:"badge-inferior"},   // MAR (2)
-    {tipo:"superior",label:"Tren Superior",badge:"badge-superior"},   // MIE (3)
-    {tipo:"inferior",label:"Tren Inferior",badge:"badge-inferior"},   // JUE (4)
-    {tipo:"superior",label:"Tren Superior",badge:"badge-superior"},   // VIE (5)
-    {tipo:"superior",label:"Tren Superior",badge:"badge-superior"},   // SAB (6)
-    {tipo:"descanso",label:"Descanso Activo",badge:"badge-descanso"}, // DOM (0)
-  ],
-  MUJER:[
-    {tipo:"superior",label:"Tren Superior",badge:"badge-superior"},   // LUN
-    {tipo:"inferior",label:"Tren Inferior",badge:"badge-inferior"},   // MAR
-    {tipo:"inferior",label:"Tren Inferior",badge:"badge-inferior"},   // MIE
-    {tipo:"superior",label:"Tren Superior",badge:"badge-superior"},   // JUE
-    {tipo:"inferior",label:"Tren Inferior",badge:"badge-inferior"},   // VIE
-    {tipo:"inferior",label:"Tren Inferior",badge:"badge-inferior"},   // SAB
-    {tipo:"descanso",label:"Descanso Activo",badge:"badge-descanso"}, // DOM
-  ]
-};
-// El array está ordenado LUN..SAB..DOM → index 0=LUN,1=MAR,...5=SAB,6=DOM
-// Mapeamos día JS (0=DOM..6=SAB) a índice del plan
-function planIdx(dayJS){ return dayJS===0?6:dayJS-1; }
-
-/* ─── RUTINAS DETALLADAS ─── */
-const RUTINAS={
-  superior:{
-    Musculo:{
-      meta:"Hipertrofia Superior",intensidad:"Alta",tipo:"Fuerza",avatar:"🦁",
-      gym:[
-        {n:"Press Pecho Plano",d:"Agarre a 1.5x ancho de hombros. Baja hasta tocar el pecho, empuja explosivo.",s:4,r:"10",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-        {n:"Press Inclinado",d:"45° de inclinación. Siente el pecho superior trabajar en cada repetición.",s:3,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=500"},
-        {n:"Remo con Barra",d:"Espalda plana, codos pegados al cuerpo. Contrae escápulas en la cima.",s:4,r:"10",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
-        {n:"Press Militar",d:"Core apretado, barra pasa frente a la cara. No hiperextiendas la espalda.",s:3,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-        {n:"Curl Bíceps",d:"Codos fijos, tensión constante. No balancees el torso para trampear.",s:3,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-        {n:"Extensión Tríceps",d:"Tríceps bajo tensión completa. Baja lento, extiende hasta bloquear.",s:3,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-      ],
-      casa:[
-        {n:"Flexiones",d:"Cuerpo recto como tabla. Toca el pecho al suelo, empuja explosivo.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-        {n:"Flexión Diamante",d:"Manos juntas formando diamante. Trabaja el tríceps al máximo.",s:3,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=500"},
-        {n:"Fondos Paralelas",d:"Usa dos sillas. Baja 90° codos atrás, no afuera.",s:4,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
-        {n:"Empuje Alpha",d:"Manos elevadas. Énfasis en la porción superior del pecho.",s:3,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-        {n:"Tirón Vertical",d:"Usa la barra de dominadas o la puerta. Concentra los dorsales.",s:3,r:"10",t:"largo",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-        {n:"Paso de Oso",d:"Rodillas al ras del suelo, avanza con control. Core siempre firme.",s:3,r:"10m",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-      ]
-    },
-    Grasa:{
-      meta:"Quema Superior HIIT",intensidad:"Muy Alta",tipo:"HIIT",avatar:"🔥",
-      gym:[
-        {n:"Press Pecho Plano",d:"Peso ligero, ritmo rápido. Máximas reps en el tiempo.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-        {n:"Remo con Barra",d:"Movimiento explosivo. No descanses entre series.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
-        {n:"Press Militar",d:"Empuja la barra al máximo, baja controlado.",s:4,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-        {n:"Jalón Polea",d:"Agarre ancho, contrae dorsales. Velocidad controlada.",s:4,r:"18",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-        {n:"Elevaciones Laterales",d:"Peso ligero, movimiento continuo. Hombros en llamas.",s:3,r:"25",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-        {n:"Escaladores",d:"Máxima velocidad. Rodillas al pecho, Core firme.",s:4,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-      ],
-      casa:[
-        {n:"Burpees Infierno",d:"Pecho al suelo, salta con los brazos arriba. Sin parar.",s:5,r:"12",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-        {n:"Flexiones",d:"Pecho al suelo. Ritmo rápido. Máximo esfuerzo.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-        {n:"Escaladores",d:"Core en fuego. Rodillas al pecho lo más rápido posible.",s:4,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500"},
-        {n:"Fondos Paralelas",d:"Dos sillas. Ritmo explosivo. Tríceps al límite.",s:4,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-        {n:"Jumping Jacks",d:"Mantén el ritmo cardíaco alto durante toda la serie.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=500"},
-        {n:"Sprint Estático",d:"Rodillas al máximo, corre en el sitio. ¡Quema todo!",s:4,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
-      ]
-    },
-    Resistencia:{
-      meta:"Resistencia Superior",intensidad:"Media-Alta",tipo:"Funcional",avatar:"⚡",
-      gym:[
-        {n:"Press Pecho Plano",d:"Peso moderado, 4s negativa. Resistencia muscular.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-        {n:"Remo con Barra",d:"Tempo controlado. Cada rep con máxima contracción.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
-        {n:"Press Militar",d:"Rango completo de movimiento. Hombros estables.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-        {n:"Jalón Polea",d:"Contracción 2s en la bajada. Extensión completa arriba.",s:3,r:"18",t:"medio",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-        {n:"Curl Bíceps",d:"Isométrico 2s en la cima. Resistencia total.",s:3,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-        {n:"Plancha Abdominal",d:"Cuerpo recto como tabla. Respira profundo y aguanta.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-      ],
-      casa:[
-        {n:"Flexiones",d:"Tempo 3-1-3. Lento y controlado. Siente cada fibra.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-        {n:"Fondos Paralelas",d:"Rango completo. Baja lento, sube explosivo.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
-        {n:"Dominadas",d:"Agarre prono, extensión completa. Si no puedes, usa banda.",s:3,r:"10",t:"largo",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-        {n:"Escaladores",d:"Ritmo constante 30s. Core en contracción permanente.",s:4,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500"},
-        {n:"Plancha Abdominal",d:"Aprieta todo: glúteos, abs, espalda. Cuerpo como tabla.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-        {n:"Paso de Oso",d:"Lento y controlado. Siente el core en cada paso.",s:3,r:"8m",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-      ]
-    }
-  },
-  inferior:{
-    Musculo:{
-      meta:"Hipertrofia Inferior",intensidad:"Alta",tipo:"Fuerza",avatar:"🦁",
-      gym:[
-        {n:"Sentadilla Libre",d:"Quiebra el paralelo. Peso en los talones. Explosión hacia arriba.",s:4,r:"10",t:"largo",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-        {n:"Peso Muerto Rumano",d:"Espalda neutral, siente el estiramiento de los isquios.",s:4,r:"10",t:"largo",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
-        {n:"Prensa de Pierna",d:"Pies a ancho de hombros. No bloquees las rodillas.",s:4,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-        {n:"Hip Thrust",d:"Barra sobre las caderas. Aprieta glúteos 2s arriba.",s:4,r:"12",t:"medio",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-        {n:"Extensión Cuádriceps",d:"Contracción máxima en la cima. Baja lento.",s:3,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-        {n:"Pantorrillas",d:"Rango completo de movimiento. Pausa 1s arriba y 1s abajo.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
-      ],
-      casa:[
-        {n:"Sentadilla Goblet",d:"Usa mochila con peso. Quiebra el paralelo siempre.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-        {n:"Hip Thrust",d:"Usa el sofá o cama. Empuja la pelvis hacia arriba. Aprieta.",s:4,r:"20",t:"medio",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-        {n:"Zancadas",d:"Paso largo, rodilla delantera no sobrepasa el pie.",s:4,r:"12/lado",t:"medio",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-        {n:"Peso Muerto",d:"Espalda recta, tira desde los talones. Isquios al límite.",s:4,r:"15",t:"largo",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
-        {n:"Elevaciones de Cadera",d:"Rodillas dobladas, eleva la pelvis. Aprieta glúteos arriba.",s:4,r:"25",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-        {n:"Pantorrillas",d:"Punta de pie en escalón. Rango completo. Sin rebotar.",s:4,r:"25",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
-      ]
-    },
-    Grasa:{
-      meta:"Quema Inferior HIIT",intensidad:"Muy Alta",tipo:"HIIT",avatar:"🔥",
-      gym:[
-        {n:"Senta-Salto",d:"Baja a sentadilla profunda, salta con las manos al cielo.",s:5,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-        {n:"Hip Thrust",d:"Explosión de cadera. Peso moderado, máxima velocidad.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-        {n:"Prensa de Pierna",d:"Ritmo rápido. 20 reps sin parar. Cardio + fuerza.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-        {n:"Zancadas",d:"Alterna piernas sin parar. Ritmo de carrera.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-        {n:"Sprint Estático",d:"Rodillas al máximo. 45 segundos explosivos.",s:5,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
-        {n:"Jumping Jacks",d:"60 segundos continuos. Mantén el ritmo cardíaco en zona de quema.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=500"},
-      ],
-      casa:[
-        {n:"Senta-Salto",d:"Baja profundo, salta lo más alto posible. Aterriza suave.",s:5,r:"15",t:"corto",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-        {n:"Sentadilla Sumo",d:"Pies abiertos, punta de pies 45°. Glúteos y aductores.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-        {n:"Hip Thrust",d:"Usa el sofá. Máxima velocidad. Quema esos glúteos.",s:4,r:"25",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-        {n:"Zancada Reversa",d:"Paso hacia atrás. Alterna piernas sin parar.",s:4,r:"20",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-        {n:"Sprint Estático",d:"Máxima velocidad. Rodillas arriba. ¡Sin excusas!",s:5,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
-        {n:"Jumping Jacks",d:"Cardio continuo. Mantén la frecuencia cardíaca alta.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=500"},
-      ]
-    },
-    Resistencia:{
-      meta:"Resistencia Inferior",intensidad:"Media-Alta",tipo:"Funcional",avatar:"⚡",
-      gym:[
-        {n:"Sentadilla Libre",d:"Peso moderado, 4s negativa. Resistencia de cuádriceps.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-        {n:"Peso Muerto Rumano",d:"Cada rep con contracción de isquios. Lento y poderoso.",s:4,r:"15",t:"medio",img:"https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=500"},
-        {n:"Hip Thrust",d:"Mantén la contracción arriba 3s. Glúteos de acero.",s:4,r:"20",t:"medio",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-        {n:"Sentadilla Isométrica",d:"Apóyate en la pared a 90°. Aguanta y respira profundo.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-        {n:"Zancadas",d:"Paso largo y controlado. Equilibrio en cada repetición.",s:4,r:"12/lado",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-        {n:"Pantorrillas",d:"Rango completo. Aguanta 1s arriba. Resistencia de gemelos.",s:4,r:"25",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
-      ],
-      casa:[
-        {n:"Sentadilla Goblet",d:"Mochila con peso. 4s bajando. Resistencia muscular.",s:4,r:"20",t:"medio",img:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500"},
-        {n:"Hip Thrust",d:"Contracción 3s en la cima. Isquios y glúteos activos.",s:4,r:"25",t:"medio",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-        {n:"Sentadilla Isométrica",d:"Pared a 90°. Respira profundo. Aguanta el tiempo.",s:4,r:"60s",t:"corto",img:"https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500"},
-        {n:"Zancada Reversa",d:"Controlado y balanceado. Core activo todo el tiempo.",s:4,r:"15/lado",t:"corto",img:"https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500"},
-        {n:"Elevaciones de Cadera",d:"Glúteos en contracción permanente. Sin bajar del todo.",s:4,r:"30",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-        {n:"Pantorrillas",d:"Talón en el suelo, punta arriba. Rango total. Quema.",s:4,r:"30",t:"corto",img:"https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500"},
-      ]
-    }
-  },
-  descanso:{
-    Musculo:{
-      meta:"Recuperación Activa",intensidad:"Baja",tipo:"Movilidad",avatar:"🧘",
-      gym:[
-        {n:"Plancha Abdominal",d:"Mantén la alineación. Respira profundo. Mindfulness muscular.",s:3,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-        {n:"Paso de Oso",d:"Muy lento. Movilidad de cadera y hombros activa.",s:3,r:"10m",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-      ],
-      casa:[
-        {n:"Plancha Abdominal",d:"Mantén la alineación. Respira profundo. Mindfulness muscular.",s:3,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-        {n:"Paso de Oso",d:"Muy lento. Movilidad activa de cadera y hombros.",s:3,r:"10m",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-      ]
-    },
-    Grasa:{
-      meta:"Recuperación Activa",intensidad:"Baja",tipo:"Cardio Suave",avatar:"🧘",
-      gym:[
-        {n:"Jumping Jacks",d:"Ritmo suave. Solo para mantener el metabolismo activo.",s:3,r:"30s",t:"corto",img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=500"},
-        {n:"Escaladores",d:"Muy lento. Solo movilidad. Sin esfuerzo máximo.",s:3,r:"30s",t:"corto",img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500"},
-      ],
-      casa:[
-        {n:"Jumping Jacks",d:"Ritmo suave. Cardio regenerativo. Activa sin agotar.",s:3,r:"30s",t:"corto",img:"https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=500"},
-        {n:"Escaladores",d:"Muy lento. Solo movilidad. Recuperación activa.",s:3,r:"30s",t:"corto",img:"https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500"},
-      ]
-    },
-    Resistencia:{
-      meta:"Recuperación Activa",intensidad:"Baja",tipo:"Movilidad",avatar:"🧘",
-      gym:[
-        {n:"Plancha Abdominal",d:"Respira y relaja. El descanso es parte del entrenamiento.",s:3,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-        {n:"Paso de Oso",d:"Movimiento lento y consciente. Recupera tu cuerpo.",s:3,r:"8m",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-      ],
-      casa:[
-        {n:"Plancha Abdominal",d:"Respira y relaja. El descanso es parte del entrenamiento.",s:3,r:"45s",t:"corto",img:"https://images.unsplash.com/photo-1566241134883-13eb2393a3cc?w=500"},
-        {n:"Paso de Oso",d:"Movimiento lento y consciente. Recupera tu cuerpo.",s:3,r:"8m",t:"corto",img:"https://images.unsplash.com/photo-1599058917232-d750c1859d7c?w=500"},
-      ]
-    }
-  }
-};
-
-const DIAS_NAMES=["DOM","LUN","MAR","MIE","JUE","VIE","SAB"];
-
-/* ═══════════════════════════════════════
-   ESTADO
-═══════════════════════════════════════ */
-let diaSeleccionado=new Date().getDay();
-let exCompletos=new Set();
-let timerInterval=null;
-let selectedSexo=null, selectedObjetivo=null, selectedLugar=null;
-
-/* ═══════════════════════════════════════
-   INIT
-═══════════════════════════════════════ */
-document.addEventListener('DOMContentLoaded',()=>{
-  const p=cargarPerfil();
-  if(!p) document.getElementById('modal-encuesta').style.display='flex';
-  else{document.getElementById('modal-encuesta').style.display='none';render(p);}
-});
-
-/* ═══════════════════════════════════════
-   CARD SELECTOR
-═══════════════════════════════════════ */
-function selectOpt(grupo,el){
-  const parent=document.getElementById('sel-'+grupo);
-  parent.querySelectorAll('.card-opt').forEach(o=>o.classList.remove('selected'));
-  el.classList.add('selected');
-  if(grupo==='sexo') selectedSexo=el.dataset.val;
-  if(grupo==='objetivo') selectedObjetivo=el.dataset.val;
-  if(grupo==='lugar') selectedLugar=el.dataset.val;
-}
-
-/* ═══════════════════════════════════════
-   CONFIGURAR
-═══════════════════════════════════════ */
-function configurar(){
-  const nombre=document.getElementById('in-nombre').value.trim();
-  if(!nombre) return showNotif('⚠ Dinos tu nombre, guerrero/a');
-  if(!selectedSexo) return showNotif('⚠ Selecciona: Guerrero o Guerrera');
-  if(!selectedObjetivo) return showNotif('⚠ Elige tu objetivo');
-  if(!selectedLugar) return showNotif('⚠ ¿Entrenas en casa o gym?');
-  const p={
-    nombre,
-    edad:document.getElementById('in-edad').value||'',
-    peso:document.getElementById('in-peso').value||'',
-    sexo:selectedSexo,
-    objetivo:selectedObjetivo,
-    lugar:selectedLugar,
-    completados:[]
-  };
-  guardarPerfil(p);
-  document.getElementById('modal-encuesta').style.display='none';
-  render(p);
-}
-
-/* ═══════════════════════════════════════
-   STORAGE
-═══════════════════════════════════════ */
-function guardarPerfil(p){localStorage.setItem('holofit_v4',JSON.stringify(p));}
-function cargarPerfil(){return JSON.parse(localStorage.getItem('holofit_v4'));}
-
-function resetear(){
-  if(confirm('¿Reiniciar tu perfil?')){
-    localStorage.removeItem('holofit_v4');
-    location.reload();
-  }
-}
-
-/* ═══════════════════════════════════════
-   RENDER DASHBOARD
-═══════════════════════════════════════ */
-function render(p){
-  document.getElementById('main-dashboard').classList.remove('hidden');
-  document.getElementById('display-nombre').innerText='Guerrer'+(p.sexo==='MUJER'?'a':'o')+' '+p.nombre;
-  document.getElementById('racha-val').innerText=p.completados.length;
-  document.getElementById('lugar-tag').innerText='📍 '+(p.lugar==='gym'?'Gimnasio':'Casa');
-  renderNav(p);
-  showDay(diaSeleccionado);
-}
-
-function renderNav(p){
-  const nav=document.getElementById('semana-nav');
-  nav.innerHTML='';
-  DIAS_NAMES.forEach((dia,i)=>{
-    const done=p.completados.includes(getFechaStr(i));
-    const active=i===diaSeleccionado;
-    const pi=planIdx(i);
-    const plan=PLAN_DIAS[p.sexo]||PLAN_DIAS['HOMBRE'];
-    const tipo=plan[pi].tipo;
-    const dot=done?'✓':(tipo==='superior'?'▲':(tipo==='inferior'?'▼':'—'));
-    const btn=document.createElement('div');
-    btn.className='day-btn'+(done?' done':(active?' active':''));
-    btn.onclick=()=>selectDay(i);
-    btn.innerHTML=`<span class="day-dot">${dot}</span>${dia}`;
-    nav.appendChild(btn);
-  });
-}
-
-/* ═══════════════════════════════════════
-   SELECCIONAR DÍA
-═══════════════════════════════════════ */
-function selectDay(i){
-  diaSeleccionado=i;
-  exCompletos=new Set();
-  const p=cargarPerfil();
-  renderNav(p);
-  showDay(i);
-}
-
-/* ═══════════════════════════════════════
-   MOSTRAR DÍA
-═══════════════════════════════════════ */
-function showDay(i){
-  const p=cargarPerfil();
-  const pi=planIdx(i);
-  const plan=PLAN_DIAS[p.sexo]||PLAN_DIAS['HOMBRE'];
-  const dayInfo=plan[pi];
-  const rutinaTipo=RUTINAS[dayInfo.tipo]||RUTINAS['descanso'];
-  const rutinaObj=rutinaTipo[p.objetivo]||rutinaTipo['Musculo'];
-  const lugar=p.lugar||'casa';
-  const ejercicios=rutinaObj[lugar]||rutinaObj['casa'];
-  const descansos=DESCANSOS[p.objetivo]||DESCANSOS['Musculo'];
-
-  // Hero
-  document.getElementById('avatar-emoji').innerText=rutinaObj.avatar;
-  document.getElementById('view-day-name').innerText='Rutina '+DIAS_NAMES[i];
-  const badge=document.getElementById('day-type-badge');
-  badge.className='day-type-badge '+dayInfo.badge;
-  badge.innerText=dayInfo.label;
-
-  // Stats
-  const sr=document.getElementById('stats-row');
-  const restTime=descansos.medio+'s';
-  sr.innerHTML=
-    `<div class="stat-pill"><span class="sv">${rutinaObj.intensidad}</span><span class="sl">Intensidad</span></div>`+
-    `<div class="stat-pill"><span class="sv">${rutinaObj.tipo}</span><span class="sl">Tipo</span></div>`+
-    `<div class="stat-pill"><span class="sv">${ejercicios.length}</span><span class="sl">Ejercicios</span></div>`+
-    `<div class="stat-pill"><span class="sv">${restTime}</span><span class="sl">Descanso</span></div>`;
-
-  // Ejercicios
-  const list=document.getElementById('ejercicios-list');
-  list.innerHTML='';
-  ejercicios.forEach((ex,idx)=>{
-    const tiempoSeg=descansos[ex.t]||descansos.medio;
-    const tiempoLabel=tiempoSeg+'s';
-    const tClass=ex.t==='corto'?'descanso-corto':ex.t==='largo'?'descanso-largo':'descanso-medio';
-    const dots=Array.from({length:ex.s},(_,si)=>
-      `<div class="set-dot${exCompletos.has(idx+'-'+si)?' done':''}" onclick="toggleSet(${idx},${si},this)" title="Serie ${si+1}">✓</div>`
-    ).join('');
-    const musculo=MUSCULOS[ex.n]||'Múltiples grupos musculares';
-    const isDone=exCompletos.has('done-'+idx);
-    const card=document.createElement('div');
-    card.className='exercise-card holo-card';
-    card.style.animationDelay=(idx*0.06)+'s';
-    card.id='excard-'+idx;
-    // borde izquierdo por tipo
-    const borderColor=dayInfo.tipo==='superior'?'#38bdf8':dayInfo.tipo==='inferior'?'#6366f1':'#64748b';
-    card.style.borderLeft=`3px solid ${borderColor}`;
-    card.innerHTML=
-      `<div class="ex-header">
-        <button class="check-btn${isDone?' done':''}" id="check-${idx}" onclick="event.stopPropagation();toggleExDone(${idx})" title="Completar ejercicio">✓</button>
-        <div class="ex-info" onclick="toggleCard(${idx})">
-          <div class="ex-name">${ex.n}</div>
-          <div class="ex-muscle">${musculo}</div>
-        </div>
-        <div class="ex-meta" onclick="toggleCard(${idx})">
-          <div class="ex-sets">${ex.s}×${ex.r}</div>
-          <div class="ex-sets-lbl">series×reps</div>
-        </div>
-        <span class="ex-arrow" onclick="toggleCard(${idx})">▾</span>
-      </div>
-      <div class="exercise-detail">
-        <div class="ex-detail-inner">
-          <img class="ex-img" src="${ex.img}&q=80" onerror="this.style.display='none'" loading="lazy">
-          <div class="edu-tip"><strong>TÉCNICA:</strong> ${ex.d}</div>
-          <div class="series-row">
-            <span class="series-lbl">Series completadas</span>
-            <div style="display:flex;align-items:center;gap:8px">
-              <span class="descanso-tag ${tClass}">⏱ ${tiempoLabel}</span>
-              <button class="timer-btn" onclick="iniciarTimer(${tiempoSeg},'${ex.n}',${idx},${ejercicios.length})">DESCANSO</button>
-            </div>
-          </div>
-          <div class="dots-row">${dots}</div>
-        </div>
-      </div>`;
-    list.appendChild(card);
-  });
-
-  updateProgress(ejercicios.length);
-
-  // Botón finalizar
-  const btn=document.getElementById('btn-finalizar');
-  const esHoy=i===new Date().getDay();
-  const doneHoy=p.completados.includes(getFechaStr(i));
-  if(doneHoy){
-    btn.innerText='✓ MISIÓN CUMPLIDA';
-    btn.classList.add('btn-completed');
-    btn.disabled=true;
-  } else if(!esHoy){
-    btn.innerText='NO ES TU DÍA ACTUAL';
-    btn.classList.remove('btn-completed');
-    btn.disabled=true;
-  } else{
-    btn.innerText='MARCAR DÍA COMO COMPLETADO';
-    btn.classList.remove('btn-completed');
-    btn.disabled=false;
-  }
-}
-
-/* ═══════════════════════════════════════
-   TOGGLE CARD / SETS / EX
-═══════════════════════════════════════ */
-function toggleCard(idx){document.getElementById('excard-'+idx).classList.toggle('active')}
-
-function toggleSet(exIdx,setIdx,el){
-  const key=exIdx+'-'+setIdx;
-  if(exCompletos.has(key)){exCompletos.delete(key);el.classList.remove('done')}
-  else{exCompletos.add(key);el.classList.add('done')}
-}
-
-function toggleExDone(idx){
-  const key='done-'+idx;
-  const btn=document.getElementById('check-'+idx);
-  const p=cargarPerfil();
-  const pi=planIdx(diaSeleccionado);
-  const plan=PLAN_DIAS[p.sexo]||PLAN_DIAS['HOMBRE'];
-  const dayInfo=plan[pi];
-  const rutinaObj=(RUTINAS[dayInfo.tipo]||RUTINAS['descanso'])[p.objetivo]||{};
-  const ejercicios=(rutinaObj[p.lugar]||rutinaObj['casa'])||[];
-  if(exCompletos.has(key)){exCompletos.delete(key);btn.classList.remove('done')}
-  else{exCompletos.add(key);btn.classList.add('done')}
-  updateProgress(ejercicios.length);
-}
-
-function updateProgress(total){
-  const done=[...exCompletos].filter(k=>k.startsWith('done-')).length;
-  const pct=total>0?Math.round(done/total*100):0;
-  document.getElementById('progress-fill').style.width=pct+'%';
-  document.getElementById('progress-label').innerText=done+'/'+total;
-}
-
-/* ═══════════════════════════════════════
-   TIMER
-═══════════════════════════════════════ */
-function iniciarTimer(segundos,nombre,exIdx,totalEx){
-  const overlay=document.getElementById('timer-overlay');
-  const numEl=document.getElementById('timer-number');
-  const progEl=document.getElementById('timer-progress');
-  const nameEl=document.getElementById('timer-ex-name');
-  const nextEl=document.getElementById('timer-next-ex');
-  const nextWrap=document.getElementById('timer-next-wrap');
-  const circumference=603;
-  overlay.classList.add('show');
-  nameEl.innerText='Después de: '+nombre;
-
-  // Próximo ejercicio
-  const p=cargarPerfil();
-  const pi=planIdx(diaSeleccionado);
-  const plan=PLAN_DIAS[p.sexo]||PLAN_DIAS['HOMBRE'];
-  const dayInfo=plan[pi];
-  const rutinaObj=(RUTINAS[dayInfo.tipo]||RUTINAS['descanso'])[p.objetivo]||{};
-  const ejercicios=(rutinaObj[p.lugar]||rutinaObj['casa'])||[];
-  const nextIdx=exIdx+1;
-  if(nextIdx<totalEx && ejercicios[nextIdx]){
-    nextEl.innerText=ejercicios[nextIdx].n;
-    nextWrap.style.display='block';
-  } else {
-    nextWrap.style.display='none';
-  }
-
-  let remaining=segundos;
-  numEl.innerText=remaining;
-  progEl.style.strokeDashoffset='0';
-  if(timerInterval)clearInterval(timerInterval);
-  timerInterval=setInterval(()=>{
-    remaining--;
-    numEl.innerText=remaining;
-    const offset=circumference*(1-remaining/segundos);
-    progEl.style.strokeDashoffset=offset;
-    if(remaining<=0){
-      clearInterval(timerInterval);timerInterval=null;
-      overlay.classList.remove('show');
-      showNotif('💪 ¡A por la siguiente serie!');
-    }
-  },1000);
-}
-
-function cancelarTimer(){
-  if(timerInterval){clearInterval(timerInterval);timerInterval=null}
-  document.getElementById('timer-overlay').classList.remove('show');
-}
-
-/* ═══════════════════════════════════════
-   COMPLETAR MISIÓN
-═══════════════════════════════════════ */
-function completarMision(){
-  const p=cargarPerfil();
-  const hoyStr=getFechaStr(new Date().getDay());
-  if(!p.completados.includes(hoyStr)){
-    p.completados.push(hoyStr);
-    guardarPerfil(p);
-    mostrarCelebracion(p);
-  }
-}
-
-function mostrarCelebracion(p){
-  const pi=planIdx(diaSeleccionado);
-  const plan=PLAN_DIAS[p.sexo]||PLAN_DIAS['HOMBRE'];
-  const dayInfo=plan[pi];
-  const rutinaObj=(RUTINAS[dayInfo.tipo]||RUTINAS['descanso'])[p.objetivo]||{};
-  document.getElementById('cel-avatar').innerText=rutinaObj.avatar||'🏆';
-  document.getElementById('cel-frase').innerText=FRASES[Math.floor(Math.random()*FRASES.length)];
-  document.getElementById('cel-racha').innerText=p.completados.length+' 🔥';
-  document.getElementById('cel-edu').innerHTML='<strong style="color:var(--sky)">¿Sabías que?</strong><br><br>'+EDU_TIPS[Math.floor(Math.random()*EDU_TIPS.length)];
-  generarConfetti();
-  document.getElementById('modal-celebracion').classList.add('show');
-}
-
-function cerrarCelebracion(){
-  document.getElementById('modal-celebracion').classList.remove('show');
-  const p=cargarPerfil();
-  render(p);
-}
-
-/* ═══════════════════════════════════════
-   CONFETTI
-═══════════════════════════════════════ */
-function generarConfetti(){
-  const wrap=document.getElementById('confetti-wrap');
-  wrap.innerHTML='';
-  const colors=['#38bdf8','#6366f1','#f59e0b','#22c55e','#ef4444','#ec4899','#a78bfa'];
-  for(let i=0;i<80;i++){
-    const el=document.createElement('div');
-    el.className='confetti-piece';
-    const size=6+Math.random()*10;
-    el.style.cssText=`left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};width:${size}px;height:${size}px;animation-duration:${1.8+Math.random()*2}s;animation-delay:${Math.random()*.8}s;border-radius:${Math.random()>.5?'50%':'3px'}`;
-    wrap.appendChild(el);
-  }
-}
-
-/* ═══════════════════════════════════════
-   NOTIFICACIÓN
-═══════════════════════════════════════ */
-function showNotif(msg){
-  const n=document.getElementById('notif');
-  n.innerText=msg;
-  n.classList.add('show');
-  setTimeout(()=>n.classList.remove('show'),2800);
-}
-
-/* ═══════════════════════════════════════
-   UTILS
-═══════════════════════════════════════ */
-function getFechaStr(index){
-  const d=new Date();
-  const diff=d.getDate()-d.getDay()+index;
-  return new Date(new Date().setDate(diff)).toISOString().split('T')[0];
-}
-</script>
 </body>
 </html>
